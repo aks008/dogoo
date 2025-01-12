@@ -1,0 +1,96 @@
+/* Custom modal dialog size (60% of the screen width) */
+.custom-modal-dialog {
+    max-width: 60%;
+    margin: auto;
+}
+
+/* Ensure the video/image container takes 50% of the modal width */
+.video-container {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Full-width image for the left side */
+.video-container img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+/* Form Container Styling */
+.form-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #f9f9f9;
+    border-left: 1px solid #ddd;
+}
+
+/* Form Fields and Button Styling */
+.form-container .form-control {
+    border-radius: 20px;
+    padding: 10px;
+    font-size: 1rem;
+}
+
+.form-container h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+#registerForm button {
+    border-radius: 20px;
+    padding: 12px;
+    font-size: 1rem;
+    background-color: #ff9800;
+    border: none;
+    color: white;
+}
+#registerForm button:hover {
+    border-radius: 20px;
+    padding: 12px;
+    font-size: 1rem;
+    background-color: rgb(11,42,110);
+    border: none;
+    color: white;
+}
+
+
+/* Center the modal content vertically */
+.modal-body {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.custom-modal-dialog {
+    max-width: 80%;
+    margin: auto;
+    height: auto;
+}
+
+/* For larger modal content */
+.modal-body {
+    display: flex;
+    justify-content: space-between;
+    padding: 40px; /* Increased padding for more space */
+}
+
+
+@media (min-width: 768px) {
+    .registrationModel {
+        max-width: 50%; /* Apply 50% max-width on medium screens and above */
+    }
+}
+
+@media (min-width: 992px) {
+    .registrationModel {
+        max-width: 50%; /* Apply 50% max-width on large screens and above */
+    }
+}
+
+
+

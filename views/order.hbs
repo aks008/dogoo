@@ -1,0 +1,250 @@
+<style>
+  /* Ensure modal is perfectly centered */
+  .modal-dialog {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content {
+    width: 80%;
+    /* Adjust the width of the modal as necessary */
+    max-width: 600px;
+    /* Set a maximum width */
+    margin: auto;
+  }
+</style>
+
+<div class="container">
+  <h1 class="text-center my-4">Payment Method</h1>
+
+  <!-- Cash on Delivery Option -->
+  <div class="payment-method-container mb-4">
+    <h4><strong>Payment Method:</strong> Cash on Delivery</h4>
+    <p>You will pay in cash when the product is delivered to your address.</p>
+  </div>
+    
+    {{!-- {{#each profile.address}}
+        <div class="radio-container">
+           {{customerName}} +91 {{customerPhone}}<br>
+            <input type="radio" id="defaultOptionYes" name="setDefault" value={{_id}}> &nbsp required;
+            <label for="defaultOptionYes" data-id={{_id}}>  {{line1}}, {{line2}}, {{city}}, {{state}}, {{zip}}, {{country}}</p></label>
+        </div>
+    {{/each}} --}}
+  <!-- Address Form -->
+  <div class="address-form">
+    <h4>Please Enter Your Address</h4>
+    <form id="orderForm" method="POST">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" class="form-control my-3" id="name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="text" class="form-control my-3" id="phone" name="phone" required>
+      </div>
+
+      <!-- Address Fields -->
+      <div class="row">
+        <div class="form-group col-md-6">
+          <label for="line1">Address Line 1</label>
+          <input type="text" class="form-control my-3" id="line1" name="address[0].line1" required>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="line2">Address Line 2</label>
+          <input type="text" class="form-control my-3" id="line2" name="address[0].line2" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group col-md-6">
+          <label for="city">City</label>
+          <input type="text" class="form-control my-3" id="city" name="address[0].city" required>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="state">State</label>
+          <input type="text" class="form-control my-3" id="state" name="address[0].state" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group col-md-6">
+          <label for="zip">ZIP Code</label>
+          <input type="text" class="form-control my-3" id="zip" name="address[0].zip" required>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="country">Country</label>
+          <input type="text" class="form-control my-3" id="country" name="address[0].country" required>
+        </div>
+      </div>
+
+      <!-- Additional Instructions -->
+      <div class="form-group">
+        <label for="instructions">Additional Instructions</label>
+        <textarea class="form-control my-3" id="instructions" name="instructions" rows="2"></textarea>
+      </div>
+
+      <!-- Address Type (Home or Other Place) -->
+      <div class="form-group row">
+        <label class="col-md-3 col-form-label">Address Type</label>
+        <div class="col-md-9">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="addressType" id="homeAddress" value="home">
+            <label class="form-check-label" for="homeAddress">Home</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="addressType" id="otherAddress" value="other">
+            <label class="form-check-label" for="otherAddress">Other Place</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Time Selection -->
+      <div class="form-group row">
+        <label class="col-md-3 col-form-label">Select Time</label>
+        <div class="col-md-9">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="timeSlot" id="time1" value="10am-6pm">
+            <label class="form-check-label" for="time1">10am - 6pm</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="timeSlot" id="time2" value="10am-9pm">
+            <label class="form-check-label" for="time2">10am - 9pm</label>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-warning w-50 my-4 d-block mx-auto"
+        style="margin-bottom: 150px !important;">Confirm Order</button>
+    </form>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+  // Adding event listener to the form submit
+  document.getElementById('orderForm').addEventListener('submit', async function (e) {
+    e.preventDefault(); // Prevent the default form submission
+
+    // Get the form data
+    const customerName = document.getElementById('name').value;
+    const customerPhone = document.getElementById('phone').value;
+    const addressType = document.querySelector('input[name="addressType"]:checked').value;
+    const timeSlot = document.querySelector('input[name="timeSlot"]:checked').value; // Fetch selected time slot
+    const line1 = document.getElementById('line1').value;
+    const line2 = document.getElementById('line2').value;
+    const city = document.getElementById('city').value;
+    const state = document.getElementById('state').value;
+    const zip = document.getElementById('zip').value;
+    const country = document.getElementById('country').value;
+    const instructions = document.getElementById('instructions').value;
+
+    // Prepare the address object
+    const address = {
+      customerName,
+      customerPhone,
+      line1,
+      line2,
+      city,
+      state,
+      zip,
+      country,
+      addressType, // Include the address type
+    };
+
+    // Prepare the order data to send to the server
+    const orderData = {
+      customerName,
+      customerPhone,
+      address: [address], // Store as array for consistency
+      instructions,
+      timeSlot, // Include the selected time slot
+    };
+
+    try {
+      // Make the API call using axios
+      const response = await axios.post(`order/paynow`, orderData, {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.status === 201) {
+        const orderConfirmationModal = new bootstrap.Modal(document.getElementById('orderConfirmationModal'));
+        orderConfirmationModal.show();
+      }
+    } catch (error) {
+      console.error('Error placing order:', error);
+      alert('An error occurred while placing the order. Please try again later.');
+    }
+  });
+</script>
+
+
+<!-- Order Confirmation Modal -->
+<div class="modal fade" id="orderConfirmationModal" tabindex="-1" aria-labelledby="orderConfirmationModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"> <!-- Center the modal vertically -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="orderConfirmationModalLabel">Order Confirmed</h5>
+      </div>
+      <div class="modal-body">
+        Your order has been successfully confirmed. Please review your order details.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning"  onclick="redirectOrderDetails()"
+          style="width: 200px; border: none; padding: 10px 20px; font-weight: 600;">Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Thank You Modal -->
+<div class="modal fade" id="thankYouModal" tabindex="-1" aria-labelledby="thankYouModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 80%; width: 100%;">
+    <!-- Adjusted max-width for responsiveness -->
+    <div class="modal-content"
+      style="background-color: #fff; border-radius: 12px; border: none; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+      <div class="modal-header"
+        style="background-color: #3faffa; color: white; border-top-left-radius: 12px; border-top-right-radius: 12px; border-bottom: 1px solid #e1e1e1;">
+        <h5 class="modal-title" id="thankYouModalLabel" style="font-weight: 600;">Thank You for Your Order!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color: white;"
+          onclick="redirectHome()"></button> <!-- Close Button with Redirection -->
+      </div>
+      <div class="modal-body text-center" style="padding: 40px 20px;">
+        <!-- Simple message without the GIF -->
+        <p style="color: #333; font-weight: 500; font-size: 22px;">
+          <b> Thank you for choosing us! </b> <br>
+          Your order is being processed. We’ll notify you when it’s ready for delivery!
+        </p>
+      </div>
+      <div class="modal-footer" style="border-top: 1px solid #e1e1e1; padding: 15px;">
+        <!-- Redirect to Order Details page -->
+        <button type="button" class="btn btn-primary" id="viewOrderDetailsBtn" onclick="redirectOrderDetails()"
+          style="width: 200px; background-color: #3faffa; border: none; padding: 10px 20px; font-weight: 600;">View
+          Order Details</button>
+        <!-- Close button with Redirection -->
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal" onclick="redirectHome()"
+          style="border: 2px solid #e1e1e1; color: #333; font-weight: 600; width: 100px;">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Function to redirect to the Home page
+  function redirectHome() {
+    window.location.href = '/';  // Adjust the URL to your home page URL
+  }
+
+  // Function to redirect to the Order Details page
+  function redirectOrderDetails() {
+    window.location.href = '/order/details';  // Adjust the URL to your order details page URL
+  }
+</script>

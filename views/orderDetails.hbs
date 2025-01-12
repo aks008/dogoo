@@ -1,0 +1,92 @@
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    /* Ensures all content is stacked vertically */
+  }
+
+  .card-body {
+    flex-grow: 1;
+    /* Makes sure the card body takes up available space */
+  }
+
+  .status-label {
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  .status-pending {
+    background-color: orange;
+    color: white;
+  }
+
+  .status-shipped {
+    background-color: green;
+    color: white;
+  }
+
+  .status-delivered {
+    background-color: blue;
+    color: white;
+  }
+
+  .status-cancelled {
+    background-color: red;
+    color: white;
+  }
+
+  .order-btn {
+    margin-top: 15px;
+    text-align: center;
+  }
+</style>
+
+<body>
+  <div class="container mt-5">
+    <div class="row">
+      <!-- Loop through each order -->
+      {{#each orders}}
+      <div class="col-md-4 mb-4">
+        <!-- Order Card -->
+        <div class="card h-100"> <!-- 'h-100' ensures the card takes full height of the container -->
+          <div class="card-header text-center">
+            <h5>#{{orderNumber}}</h5> <!-- Display Order ID -->
+          </div>
+          <div class="card-body">
+            <!-- Order Status -->
+            <div class="mb-3">
+              <label for="orderStatus" class="form-label">Status &nbsp;</label>
+              <span class="status-label status-pending">{{status}}</span>
+              <!-- Dynamic Status with Styling -->
+            </div>
+
+            <div class="mb-3">
+              <h6><strong>Customer Information:</strong></h6>
+              <p><strong>Name:</strong> {{customerName}}</p>
+              <p><strong>Phone:</strong> {{customerPhone}}</p>
+
+              <!-- Loop through the addresses array and display each address -->
+              {{#each address}}
+                  <p><strong>Address:</strong> {{this.line1}}, {{this.line2}}, {{this.city}}, {{this.state}}, {{this.zip}}, {{this.country}}</p>
+              {{/each}}
+            </div>
+            
+            <!-- Order Summary -->
+            <div class="d-flex justify-content-between mb-3">
+              <h6><strong>Total Price:</strong></h6>
+              <span><b>₹{{totalAmount}}</b></span>
+            </div>
+            
+            <!-- Order Details Button -->
+           <div class="order-btn text-start">
+                <a href="/order/{{orderNumber}}" class="btn btn-secondary">View Order Details</a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</body>

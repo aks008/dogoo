@@ -1,0 +1,242 @@
+<head>
+    <style>
+        .cart-container {
+            max-width: 800px;
+            margin: auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .cart-item {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        .cart-item img {
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+            border-radius: 5px;
+        }
+        .item-details {
+            flex: 1;
+        }
+        .item-details p {
+            margin: 5px 0;
+        }
+        .item-total {
+            text-align: right;
+        }
+        .item-total p {
+            margin: 5px 0;
+        }
+        .cart-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cart-actions button {
+            padding: 5px 10px;
+            margin: 0 5px;
+            color: white;
+            border: none;
+            background-color: #007bff;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .cart-actions button:hover {
+            background-color: #0056b3;
+        }
+        .delete-btn {
+            background-color:  red!important;
+        }
+        .delete-btn:hover {
+            background-color: darkred !important;
+        }
+        a {
+            text-decoration: none;  /* Removes the underline */
+            color: inherit;         /* Inherits the color from the parent element */
+        }
+          .empty-cart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    {{#if items}}
+<div class="cart-container">
+    <h1 class="text-center mb-4">Shopping Cart</h1>
+    {{#each items}}
+    <div class="cart-item d-flex flex-column flex-md-row p-3 border rounded" data-id="{{productDetails._id}}">
+        <!-- Product Image -->
+        <div class="cart-item-image mb-2 mb-md-0 w-100 w-md-25">
+            <img class="img-fluid" src="{{productDetails.imageUrl}}" alt="Product Image">
+        </div>
+
+        <!-- Product Details -->
+        <div class="cart-item-details w-100 w-md-50 mb-3  d-flex flex-column justify-content-between">
+            <p><strong>Product Name:</strong> {{productDetails.name}}</p>
+            <p><strong>Price:</strong> ₹{{productDetails.price}}</p>
+            <p><strong>Quantity:</strong> <span class="quantity">{{quantity}}</span></p>
+          <div class="item-total" style="text-align: left !important;" >
+                <p><strong>Total:</strong> ₹{{totalPrice}}</p>
+            </div>
+        </div>
+
+        <!-- Cart Actions (Buttons) -->
+        <div class="cart-actions d-flex flex-column flex-md-row align-items-center w-100 w-md-25">
+            <div class="d-flex justify-content-between w-100">
+                <!-- Add or remove item quantity -->
+                <button class="update-quantity btn btn-sm btn-primary w-100  mb-md-0" data-id="{{productDetails._id}}" data-price="{{productDetails.price}}" data-action="increase">+</button>
+                <button class="update-quantity btn btn-sm btn-primary w-100" data-id="{{productDetails._id}}" data-price="{{productDetails.price}}" data-action="decrease">-</button>
+            </div>
+            <!-- Delete item -->
+            <button class="delete-btn btn btn-sm btn-danger mt-2 w-100 w-md-auto" style="margin-bottom: 8px !important; "  data-id="{{productDetails._id}}">Delete</button>
+        </div>
+    </div>
+    {{/each}}
+    <!-- Buy Now Button -->
+    <div class="buy-now-container d-flex justify-content-center mt-4">
+        <button class="btn btn-warning p-2 m-2 w-100 w-md-25 buy-now-btn">
+            <div class="total-cart-value" id="redirectButton">
+                <b>Pay</b> ₹<span id="totalCartValue">0</span> </a>
+            </div>
+        </button>
+    </div>
+</div>
+{{else}}
+
+  <div class="container-fluid empty-cart-container mb-1">
+    <div>
+      <h3>Your Cart is Empty</h3>
+      <p>Looks like you have no items in your cart. Start shopping now!</p>
+      <button class="btn btn-warning btn-lg" onclick="window.location.href='/products'">Purchase Now</button>
+    </div>
+  </div>
+{{/if}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cartItems = document.querySelectorAll('.cart-item');
+
+            cartItems.forEach(item => {
+                const productId = item.getAttribute('data-id');
+                const quantityElement = item.querySelector('.quantity');
+                const totalPriceElement = item.querySelector('.item-total p');
+            
+                item.querySelectorAll('.update-quantity').forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        const actionType = e.target.dataset.action;
+                        const price = e.target.dataset.price;
+                        let quantity = parseInt(quantityElement.textContent);
+                        if (actionType === 'increase') {
+                            quantity += 1;
+                            // Update quantity and total price in the UI
+                            quantityElement.textContent = quantity;
+                            totalPriceElement.innerHTML = `<b>Total: </b>₹${quantity * price}.00`;
+                            // Update quantity on the backend
+                            updateQuantity(productId, actionType, quantity);
+                        } else if (actionType === 'decrease' && quantity > 1) {
+                            quantity -= 1;
+                            // Update quantity and total price in the UI
+                            quantityElement.textContent = quantity;
+                            totalPriceElement.innerHTML = `<b>Total: </b>₹${quantity * price}.00`;
+                            // Update quantity on the backend
+                            updateQuantity(productId, actionType, quantity);
+                        }else{
+                            const cartItem = e.target.closest('.cart-item');
+                            const productId = e.target.dataset.id;
+                            // Remove the item from the cart container
+                            deleteCartItem(productId);
+                            cartItem.remove();            
+                        }
+                        updateTotalCartValue();
+                    });
+                });
+
+                // Handle delete action
+                item.querySelector('.delete-btn').addEventListener('click', function(e) {
+                const cartItem = e.target.closest('.cart-item');
+                const productId = e.target.dataset.id;
+                // Remove the item from the cart container
+                deleteCartItem(productId);
+                updateTotalCartValue();
+                cartItem.remove();
+                });
+            });
+        });
+
+        // Update quantity on the backend
+        function updateQuantity(productId, actionType, quantity) {
+            const token = localStorage.getItem('token');
+            axios.put(`cart/update/${productId}`, {
+                action: actionType,
+                quantity: quantity
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                updateTotalCartValue();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating quantity');
+            });
+        }
+
+        // Delete cart item from backend and remove from UI
+        function deleteCartItem(productId, itemElement) {
+            const token = localStorage.getItem('token');
+            axios.delete(`cart/product/${productId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                updateTotalCartValue();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error while deleting item');
+            });
+        }
+    
+        function updateTotalCartValue() {
+            let totalCartValue = 0;
+
+            // Get all cart items
+            const cartItems = document.querySelectorAll('.cart-item');
+
+            // Loop through each cart item and calculate the total
+            cartItems.forEach(item => {
+                const quantityElement = item.querySelector('.quantity');
+                const totalPriceElement = item.querySelector('.item-total p');
+                
+                // Get the quantity and total price values
+                const quantity = parseInt(quantityElement.textContent);
+                console.log(totalPriceElement.textContent)
+                const totalPrice = parseInt(totalPriceElement.textContent.replace('Total: ₹', '')); // Remove ₹, commas, or other symbols
+
+                // Add the total price for the item to the cart total
+                totalCartValue += totalPrice;
+            });
+
+            // Update the total cart value in the UI
+            const totalCartValueElement = document.getElementById('totalCartValue');
+            totalCartValueElement.textContent = totalCartValue;
+        }
+
+        // Call this function to update the total cart value when the page loads or when cart items change
+        updateTotalCartValue();
+
+        document.getElementById('redirectButton').addEventListener('click', function() {
+            window.location.href = '/order';  // Redirects to the home page
+        });
+    </script>
+</body>

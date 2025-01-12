@@ -1,0 +1,118 @@
+
+    <style>
+     
+        .container {
+            padding: 20px;
+			color: white;
+            background: #1c1c1c;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+        .table thead th {
+            background: #007bff;
+            color: #fff;
+            text-align: center;
+        }
+        .table tbody td {
+            text-align: center;
+        }
+        .badge-success {
+            background-color: #28a745;
+        }
+        .badge-warning {
+            background-color: #ffc107;
+        }
+        .badge-danger {
+            background-color: #dc3545;
+        }
+        .form-control {
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2 class="text-center mb-4" style="padding-top:10px"></h2>
+<div class="container">
+    <!-- Search Input -->
+    <input type="text" class="form-control" id="searchInput" placeholder="Search by name, email, or status...">
+    <!-- User Table -->
+    <table class="table table-dark table-hover table-bordered">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Number</th>
+                <th>Email</th>
+                <th>Total Orders</th>
+                <th>Total Amount</th>
+                <th>view</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody">
+            {{#each users}}
+            <tr>
+                <td>{{@index}}</td>
+                <td>{{firstName}} {{lastName}}</td>
+                <td>{{phone}}</td>
+                <td>{{email}}</td>
+                <td>{{totalOrders}}</td>
+                <td style="text-align: right;">
+                    ₹{{totalAmount}}
+                </td>
+                <td>
+                  <a href="">  
+                    <?xml version="1.0" encoding="iso-8859-1"?>
+                    <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                    <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+                    <svg fill="white" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                        width="25px" height="25px" viewBox="0 0 442.04 442.04"
+                        xml:space="preserve">
+                    <g>
+                        <g>
+                            <path d="M221.02,341.304c-49.708,0-103.206-19.44-154.71-56.22C27.808,257.59,4.044,230.351,3.051,229.203
+                                c-4.068-4.697-4.068-11.669,0-16.367c0.993-1.146,24.756-28.387,63.259-55.881c51.505-36.777,105.003-56.219,154.71-56.219
+                                c49.708,0,103.207,19.441,154.71,56.219c38.502,27.494,62.266,54.734,63.259,55.881c4.068,4.697,4.068,11.669,0,16.367
+                                c-0.993,1.146-24.756,28.387-63.259,55.881C324.227,321.863,270.729,341.304,221.02,341.304z M29.638,221.021
+                                c9.61,9.799,27.747,27.03,51.694,44.071c32.83,23.361,83.714,51.212,139.688,51.212s106.859-27.851,139.688-51.212
+                                c23.944-17.038,42.082-34.271,51.694-44.071c-9.609-9.799-27.747-27.03-51.694-44.071
+                                c-32.829-23.362-83.714-51.212-139.688-51.212s-106.858,27.85-139.688,51.212C57.388,193.988,39.25,211.219,29.638,221.021z"/>
+                        </g>
+                        <g>
+                            <path d="M221.02,298.521c-42.734,0-77.5-34.767-77.5-77.5c0-42.733,34.766-77.5,77.5-77.5c18.794,0,36.924,6.814,51.048,19.188
+                                c5.193,4.549,5.715,12.446,1.166,17.639c-4.549,5.193-12.447,5.714-17.639,1.166c-9.564-8.379-21.844-12.993-34.576-12.993
+                                c-28.949,0-52.5,23.552-52.5,52.5s23.551,52.5,52.5,52.5c28.95,0,52.5-23.552,52.5-52.5c0-6.903,5.597-12.5,12.5-12.5
+                                s12.5,5.597,12.5,12.5C298.521,263.754,263.754,298.521,221.02,298.521z"/>
+                        </g>
+                        <g>
+                            <path d="M221.02,246.021c-13.785,0-25-11.215-25-25s11.215-25,25-25c13.786,0,25,11.215,25,25S234.806,246.021,221.02,246.021z"/>
+                        </g>
+                    </g>
+                    </svg>
+                    </a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+  
+    <script>
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#userTableBody tr');
+            rows.forEach(row => {
+                const name = row.cells[1].textContent.toLowerCase();
+                const email = row.cells[3].textContent.toLowerCase();
+                const status = row.cells[5].textContent.toLowerCase();
+
+                if (name.includes(filter) || email.includes(filter) || status.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+

@@ -1,0 +1,110 @@
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        /* Make the navbar always fixed at the top */
+        .main-header {
+            position: fixed; /* Make it stay at the top even when scrolling */
+            top: 0; /* Stick to the top */
+            left: 0;
+            right: 0;
+            z-index: 1030; /* Ensure the navbar stays on top of other content */
+            width: 100%;
+        }
+
+        /* Add some padding to the top of the body to prevent content from hiding behind the navbar */
+        body {
+            padding-top: 60px; /* Adjust according to your navbar height */
+        }
+
+        /* Optional: Make the navbar slightly transparent or have a background color */
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.9); /* Optional: make the navbar semi-transparent */
+        }
+    </style>
+</head>
+
+<header class="main-header navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#"><img src="/image/logo.png" alt="Dog Food Logo" style="height: 40px;"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
+                <li class="nav-item"><a class="nav-link" href="/subscription">Subscription</a></li>
+                <li class="nav-item"><a class="nav-link" href="/feed">Feed For You</a></li>
+                <li class="nav-item"><a class="nav-link" href="/faqs">FAQs</a></li>
+                <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+            </ul>
+            <ul class="navbar-nav ms-auto"> <!-- Align to the right -->
+                <li class="nav-item"><a class="nav-link" href="/cart"><span class="mx-2 px-2" id="cartNumber"
+                            style="color: white; border-radius:100px"></span><img src="/image/trolley.png" width="25px"
+                            height="25px" alt="" srcset=""></a></li>
+                <li class="nav-item"><a class="nav-link" href="/order/details">Orders</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userProfileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{#if profile.attachment.path}}
+                        <img src="{{profile.attachment.path}}" alt="" style="width: 30px; height: 30px; border-radius: 50%;">
+                        {{else}}
+                        <img src="/image/blank-profile-picture.png" alt="" style="width: 30px; height: 30px; border-radius: 50%;">
+                        {{/if}}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
+                        <li><a class="dropdown-item" href="/users/profile">Profile</a></li>
+                        <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li class="nav-item"><a class="dropdown-item" href="/users/logout">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Function to fetch cart data and update the cart count
+    function updateCartCount() {
+        const token = localStorage.getItem('token');
+        // Make the API request to get cart data
+        axios.get(`cart/count`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then(response => {
+            const cartCount = document.getElementById('cartNumber');
+            if (response.data.items > 0) {
+                cartCount.innerHTML = response.data.items;
+                cartCount.style.backgroundColor = 'orange';
+                cartCount.style.border = 'none';
+
+            } else {
+                cartCount.innerHTML = '';  // Clear the cart count
+                cartCount.style.backgroundColor = 'white';
+                cartCount.style.border = 'none';
+
+            }
+        })
+            .catch(error => {
+                console.error('Error fetching cart data:', error);
+                // Optionally, handle error by setting cart count to 0 or displaying a message
+                const cartCount = document.getElementById('cartNumber');
+                if (cartCount) {
+                    cartCount.innerHTML = '';  // Clear the cart count
+                    cartCount.style.backgroundColor = 'white';
+                }
+            });
+    }
+
+    // Call the function on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        updateCartCount(); // Update cart count when the page loads
+    });
+</script>

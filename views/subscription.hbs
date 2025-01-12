@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Biscuit Subscription</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Basic Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fff;
+            color: #000;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: #000;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+
+        /* Subscription Cards */
+        .card-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .card {
+            width: 20rem;
+            margin-bottom: 50px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-body {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .card-text {
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .btn {
+            background-color: #000;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            border: 1px solid #000;
+        }
+
+        .btn:hover {
+            background-color: #fff;
+            color: #000;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        .table thead {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .table th, .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* Media Queries for Responsive Layout */
+        @media (max-width: 767px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .card-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .table-container {
+                padding: 20px;
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Dog Food Subscription Plans</h1>
+
+        <!-- Subscription Plans Table -->
+        <div class="table-container">
+            <!-- Table wrapped in .table-responsive for horizontal scrolling on smaller screens -->
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Plan Type</th>
+                            <th>Product Type</th>
+                            <th>Price (Product)</th>
+                            <th>Shipping</th>
+                            <th>Total Price</th>
+                            <th>Frequency</th>
+                            <th>Savings / Discounts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Weekly Plans -->
+                        <tr>
+                            <td>Weekly 1-Pack</td>
+                            <td>1 Pack</td>
+                            <td>₹190</td>
+                            <td>₹30</td>
+                            <td>₹220</td>
+                            <td>Weekly</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Weekly 2-Pack</td>
+                            <td>2 Packs</td>
+                            <td>₹380</td>
+                            <td>₹30</td>
+                            <td>₹410</td>
+                            <td>Weekly</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Weekly 5-Pack</td>
+                            <td>5 Packs</td>
+                            <td>₹950</td>
+                            <td>₹30</td>
+                            <td>₹980</td>
+                            <td>Weekly</td>
+                            <td>2% Discount (₹961)</td>
+                        </tr>
+
+                        <!-- Monthly Plans -->
+                        <tr>
+                            <td>Monthly 1-Pack</td>
+                            <td>1 Pack</td>
+                            <td>₹190</td>
+                            <td>₹30</td>
+                            <td>₹220</td>
+                            <td>Monthly</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Monthly 5-Pack</td>
+                            <td>5 Packs</td>
+                            <td>₹950</td>
+                            <td>₹30</td>
+                            <td>₹980</td>
+                            <td>Monthly</td>
+                            <td>2% Discount (₹961)</td>
+                        </tr>
+                        <tr>
+                            <td>Monthly 10-Pack</td>
+                            <td>10 Packs</td>
+                            <td>₹1,900</td>
+                            <td>₹30</td>
+                            <td>₹1,930</td>
+                            <td>Monthly</td>
+                            <td>4% Discount (₹1,854)</td>
+                        </tr>
+                        <tr>
+                            <td>Monthly 15-Pack</td>
+                            <td>15 Packs</td>
+                            <td>₹2,850</td>
+                            <td>₹30</td>
+                            <td>₹2,880</td>
+                            <td>Monthly</td>
+                            <td>5% Discount (₹2,737.5)</td>
+                        </tr>
+                        <tr>
+                            <td>Monthly 20-Pack</td>
+                            <td>20 Packs</td>
+                            <td>₹3,800</td>
+                            <td>₹30</td>
+                            <td>₹3,830</td>
+                            <td>Monthly</td>
+                            <td>8% Discount (₹3,526)</td>
+                        </tr>
+                        <tr>
+                            <td>Monthly 25-Pack</td>
+                            <td>25 Packs</td>
+                            <td>₹4,750</td>
+                            <td>₹30</td>
+                            <td>₹4,780</td>
+                            <td>Monthly</td>
+                            <td>10% Discount (₹4,305)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Subscription Plan Cards -->
+        <div class="card-container">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Weekly 1-Pack</h5>
+                    <p class="card-text">₹220.00</p>
+                    <p class="card-text">Delivered weekly to your doorstep.</p>
+                    <a href="#" class="btn">Subscribe Now</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Monthly 5-Pack</h5>
+                    <p class="card-text">₹961.00</p>
+                    <p class="card-text">Save 2% with our Monthly Plan.</p>
+                    <a href="#" class="btn">Subscribe Now</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Monthly 10-Pack</h5>
+                    <p class="card-text">₹1,854.00</p>
+                    <p class="card-text">Save 4% with our Monthly Plan.</p>
+                    <a href="#" class="btn">Subscribe Now</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subscription Plan Cards -->
+        <div class="card-container">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Monthly 15-Pack</h5>
+                    <p class="card-text"><del>₹2,880.00</del> ₹2,737.00</p>
+                    <p class="card-text">Save 4% with our Monthly Plan.</p>
+                    <a href="#" class="btn">Subscribe Now</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Monthly 20-Pack</h5>
+                    <p class="card-text"><del>₹3,830.00</del> ₹3,526.00</p>
+                    <p class="card-text">Save 8% with our Monthly Plan.</p>
+                    <a href="#" class="btn">Subscribe Now</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Monthly 25-Pack</h5>
+                    <p class="card-text"><del>₹4,780.00</del> ₹4,305.00</p>
+                    <p class="card-text">Save 10% with our Monthly Plan.</p>
+                    <a href="#" class="btn">Subscribe Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

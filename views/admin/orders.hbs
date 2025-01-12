@@ -1,0 +1,152 @@
+<style>
+  .status-label {
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  .status-pending {
+    background-color: orange;
+    color: white;
+  }
+
+  .status-shipped {
+    background-color: green;
+    color: white;
+  }
+
+  .status-delivered {
+    background-color: blue;
+    color: white;
+  }
+
+  .status-cancelled {
+    background-color: red;
+    color: white;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.min.js"></script>
+
+
+<body>
+  <div class="container" style="padding-top: 20px;">
+    <div class="row">
+      <!-- Orders Table -->
+      <div class="col-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Status</th>
+              <th>Customer Name</th>
+              <th>Phone</th>
+              <th>Users</th>
+              <th>Total Amount</th>
+              <th style="text-align: center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Loop through each order -->
+            {{#each orders}}
+            <tr>
+              <td>#{{orderNumber}}</td> <!-- Display Order ID -->
+              <td>
+                <span class="status-label status-pending">{{status}}</span>
+                <!-- Dynamic Status with Styling -->
+              </td>
+              <td>{{customerName}}</td>
+              <td>{{customerPhone}}</td>
+
+              <!-- Loop through the addresses array and display each address -->
+              <td>
+                {{orderBy}}
+              </td>
+              <td><b>₹{{totalAmount}}</b></td>
+              <td>
+
+
+                <div class="d-flex gap-2">
+                  <button class="btn btn-primary" onclick="changeStatus('confirmed', this)" data-id="{{_id}}">
+                    Confirmed
+                  </button>
+
+                  <button class="btn btn-warning" onclick="changeStatus('delivered', this)" data-id="{{_id}}">
+                    Delivered
+                  </button>
+                  {{#if (eq status "delivered") }}
+                  <!-- Trigger Button for Payment Modal -->
+                  <button type="button" class="btn btn-success">
+                    Pay Now
+                  </button>
+
+                  {{/if }}
+                </div>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Cash Payment -->
+  <div class="modal fade" id="cashPaymentModal" tabindex="-1" aria-labelledby="cashPaymentModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 90%;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cashPaymentModalLabel">Cash Payment</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="cashPaymentForm">
+            <div class="mb-3">
+              <label for="paymentAmount" class="form-label">Amount</label>
+              <input type="number" class="form-control" id="paymentAmount" disabled>
+            </div>
+            <div class="mb-3">
+              <label for="paymentMode" class="form-label">Payment Mode</label>
+              <input type="text" class="form-control" id="paymentMode" value="Cash" disabled>
+            </div>
+            <button type="submit" class="btn btn-primary">Pay Now</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    /**
+    * Updates the order status via API.
+    * @param {string} status - The new status ('confirmed' or 'delivered').
+    * @param {HTMLElement} button - The button element that was clicked.
+    */
+    function changeStatus(status, button) {
+      // Retrieve the order ID from the data-id attribute
+      const orderId = button.getAttribute('data-id');
+      const url = `/admin/status/change/${orderId}`; // API endpoint
+      const data = { status }; // Payload
+
+      // Axios PUT request
+      axios.put(url, data)
+        .then(response => {
+          // Optionally update the UI dynamically
+          // Example: Disable the button or provide feedback
+          button.textContent = `${status.charAt(0).toUpperCase() + status.slice(1)} ✓`;
+          button.disabled = true;
+        })
+        .catch(error => {
+          // On error
+          const errorMessage = error.response
+            ? error.response.data.message
+            : error.message;
+          alert(`Failed to update status: ${errorMessage}`);
+          console.error(error);
+        });
+    }
+  </script>
