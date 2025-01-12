@@ -115,7 +115,7 @@ router.get('/users', async (req, res) => {
 
 router.get('/orders/:status', async (req, res) => {
 	try {
-		const orders = await Orders.find({ status: req.params.status });
+		const orders = await Orders.find({ status: req.params.status }).sort({ _id: - 1 });
 		return res.render("admin/orders", {
 			layout: 'admin',  // Use the dashboard layout
 			orders: orders,  // Pass user data to the view
