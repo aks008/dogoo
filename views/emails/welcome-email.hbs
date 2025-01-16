@@ -1,48 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to {{siteName}}</title>
+    <title>Welcome to Dogo Biscuits</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            padding: 20px;
-        }
         .container {
             background-color: #ffffff;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             max-width: 600px;
-            margin: 0 auto;
+            margin: 30px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
         }
+
         h1 {
-            color: orange;
+            color: #ff7f32;
+            font-size: 28px;
+            text-align: center;
         }
+
         p {
             font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 20px;
         }
-        .btn {
-            background-color: orange;
+
+        .btn,
+        .verify-btn {
+            background-color: #ff7f32;
             color: white;
             padding: 12px 20px;
             border-radius: 5px;
             text-decoration: none;
             font-weight: bold;
+            display: inline-block;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .verify-btn {
+            background-color: #3498db;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            margin-top: 30px;
+        }
+
+        .footer a {
+            color: #ff7f32;
+            text-decoration: none;
+        }
+
+        .divider {
+            margin: 20px 0;
+            border-top: 1px solid #eee;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Welcome, {{userName}}!</h1>
-        <p>Thank you for signing up at {{siteName}}! We're excited to have you as part of our community.</p>
-        <p>Click the button below to visit our website and start exploring:</p>
+        <p>We're so happy you've joined the Dogo Biscuits community. To get started, we just need you to verify your
+            email address. It's quick and easy!</p>
+
+        <!-- Verify Email Button -->
+        <a href="{{verifyUrl}}" class="verify-btn">Verify Your Email</a>
+
+        <div class="divider"></div>
+
+        <p>After verifying your email, you can start exploring everything {{siteName}} has to offer. Simply click the
+            button below:</p>
         <a href="{{siteUrl}}" class="btn">Visit Our Website</a>
-        <p>If you have any questions, feel free to contact us.</p>
-        <p>Best regards,<br>{{siteName}} Team</p>
+
+        <div class="footer">
+            <p>If you have any questions or need help, feel free to <a href="mailto:dogobuscuits@gmail.com">reach out to
+                    us</a>!</p>
+            <p>&copy; 2024 Dogo biscuits. All rights reserved.</p>
+        </div>
     </div>
 </body>
+
 </html>

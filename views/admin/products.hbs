@@ -44,8 +44,16 @@
           </div>
         </div>
       </a>
+      <!-- Action Buttons -->
+      <div class="d-flex justify-content-between mt-2">
+        <!-- Edit Button -->
+        <button class="btn btn-primary btn-sm" onclick="editProduct('{{this._id}}')">Edit</button>
+        <!-- Delete Button -->
+        <button class="btn btn-danger btn-sm" onclick="deleteProduct('{{this._id}}')">Delete</button>
+      </div>
     </div>
     {{/each}}
+
   </div>
 </main>
 
@@ -209,6 +217,17 @@
       alert('Error: ' + error.message);
     }
   });
+
+  function deleteProduct(productId) {
+    axios.delete(`/admin/products/${productId}`)
+      .then(response => {
+        document.getElementById(`product-${productId}`).remove(); // Remove the product from UI
+      })
+      .catch(error => {
+        console.error('Error deleting product:', error);
+        alert('Failed to delete the product. Please try again.');
+      });
+  }
 </script>
 
 

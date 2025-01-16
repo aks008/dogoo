@@ -1,7 +1,9 @@
 <header class="main-header navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#"><img src="image/logo.png" alt="Dog Food Logo" style="height: 40px;"></a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <a class="navbar-brand" href="#"><img src="image/logo.png" alt="Dog Food Logo"
+                style="width: 100px !important;"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -13,16 +15,18 @@
                 <li class="nav-item"><a class="nav-link" href="faqs">FAQs</a></li>
                 <li class="nav-item"><a class="nav-link" href="contact">Contact</a></li>
             </ul>
-            <ul class="navbar-nav ms-auto">  <!-- Align to the right -->
+            <ul class="navbar-nav ms-auto"> <!-- Align to the right -->
                 <!-- Dynamic login/logout buttons -->
                 {{#if isAuthenticated}}
-                    <!-- Display user info and logout button if authenticated -->
-                    <li class="nav-item"><a class="nav-link" href="#">Welcome, {{user.name}}</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                <!-- Display user info and logout button if authenticated -->
+                <li class="nav-item"><a class="nav-link" href="#">Welcome, {{user.name}}</a></li>
+                <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
                 {{else}}
-                    <!-- Display login and register buttons if not authenticated -->
-                    <li class="nav-item"><a class="nav-link" href="/login" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Register</a></li>
+                <!-- Display login and register buttons if not authenticated -->
+                <li class="nav-item"><a class="nav-link" href="/login" data-bs-toggle="modal"
+                        data-bs-target="#loginModal">Login</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal"
+                        data-bs-target="#registerModal">Register</a></li>
                 {{/if}}
             </ul>
         </div>
@@ -74,26 +78,30 @@
                         </div>
                         <div class="mb-3">
                             <label for="phone" class="form-label">Phone</label>
-                            <input type="text" class="form-control" id="phone" name="phone" 
-                                pattern="^\+?[1-9]\d{1,14}$" title="Phone number must be in a valid format (e.g., +1234567890)" required>
+                            <input type="text" class="form-control" id="phone" name="phone" pattern="^\+?[1-9]\d{1,14}$"
+                                title="Phone number must be in a valid format (e.g., +1234567890)" required>
                         </div>
                         <div class="mb-3 position-relative">
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="password" name="password" required>
-                            <span class="eye-icon position-absolute" style="right: 10px; top: 50%; cursor: pointer;" onclick="togglePassword('password')">
+                            <span class="eye-icon position-absolute" style="right: 10px; top: 50%; cursor: pointer;"
+                                onclick="togglePassword('password')">
                                 👁️
                             </span>
                         </div>
                         <div class="mb-3 position-relative">
                             <label for="confirmPassword" class="form-label">Confirm Password</label>
-                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
-                            <span class="eye-icon position-absolute" style="right: 10px; top: 50%; cursor: pointer;" onclick="togglePassword('confirmPassword')">
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+                                required>
+                            <span class="eye-icon position-absolute" style="right: 10px; top: 50%; cursor: pointer;"
+                                onclick="togglePassword('confirmPassword')">
                                 👁️
                             </span>
                             <div id="passwordError" style="color: red; display: none;">Passwords do not match!</div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Register</button>
-                        <div id="formError" class="text-danger mt-2" style="display: none;">User already exists. Please try again.</div>
+                        <div id="formError" class="text-danger mt-2" style="display: none;">User already exists. Please
+                            try again.</div>
                     </form>
                 </div>
             </div>
@@ -128,7 +136,8 @@
                         <div class="mb-3 position-relative">
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="loginPassword" name="password" required>
-                            <span class="eye-icon position-absolute" style="right: 10px; top: 50%; cursor: pointer;" onclick="togglePassword('loginPassword')">
+                            <span class="eye-icon position-absolute" style="right: 10px; top: 50%; cursor: pointer;"
+                                onclick="togglePassword('loginPassword')">
                                 👁️
                             </span>
                         </div>

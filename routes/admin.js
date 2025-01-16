@@ -141,6 +141,19 @@ router.get('/products', async (req, res) => {
 
 
 // Get all orders
+router.delete('/products/:id', async (req, res) => {
+	try {
+		const data = await Products.deleteOne({ _id: req.params.id });
+		console.log(data);
+		return res.status(200).json({ data: "Product Deleted successfully" });
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ message: 'Failed to Delete products', error: err.message });
+	}
+});
+
+
+// Get all orders
 router.put('/status/change/:id', async (req, res) => {
 	try {
 		const orders = await Orders.updateOne({ _id: req.params.id },
