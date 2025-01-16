@@ -3,22 +3,27 @@
     <style>
         /* Make the navbar always fixed at the top */
         .main-header {
-            position: fixed; /* Make it stay at the top even when scrolling */
-            top: 0; /* Stick to the top */
+            position: fixed;
+            /* Make it stay at the top even when scrolling */
+            top: 0;
+            /* Stick to the top */
             left: 0;
             right: 0;
-            z-index: 1030; /* Ensure the navbar stays on top of other content */
+            z-index: 1030;
+            /* Ensure the navbar stays on top of other content */
             width: 100%;
         }
 
         /* Add some padding to the top of the body to prevent content from hiding behind the navbar */
         body {
-            padding-top: 60px; /* Adjust according to your navbar height */
+            padding-top: 60px;
+            /* Adjust according to your navbar height */
         }
 
         /* Optional: Make the navbar slightly transparent or have a background color */
         .navbar {
-            background-color: rgba(255, 255, 255, 0.9); /* Optional: make the navbar semi-transparent */
+            background-color: rgba(255, 255, 255, 0.9);
+            /* Optional: make the navbar semi-transparent */
         }
     </style>
 </head>
@@ -40,22 +45,28 @@
                 <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
             </ul>
             <ul class="navbar-nav ms-auto"> <!-- Align to the right -->
-                <li class="nav-item"><a class="nav-link" href="/cart"><span class="mx-2 px-2" id="cartNumber"
-                            style="color: white; border-radius:100px"></span><img src="/image/trolley.png" width="25px"
-                            height="25px" alt="" srcset=""></a></li>
+                <li class="nav-item"><a class="nav-link" href="/cart">
+
+                        <img src="/image/trolley.png" width="25px" height="25px" alt="" srcset=""><span
+                            class="mx-2 px-2" id="cartNumber" style="color: white; border-radius:100px"></span></a></li>
                 <li class="nav-item"><a class="nav-link" href="/order/details">Orders</a></li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userProfileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="userProfileDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
                         {{#if profile.attachment.path}}
-                        <img src="{{profile.attachment.path}}" alt="" style="width: 30px; height: 30px; border-radius: 50%;">
+                        <img src="{{profile.attachment.path}}" alt=""
+                            style="width: 30px; height: 30px; border-radius: 50%;">
                         {{else}}
-                        <img src="/image/blank-profile-picture.png" alt="" style="width: 30px; height: 30px; border-radius: 50%;">
+                        <img src="/image/blank-profile-picture.png" alt=""
+                            style="width: 30px; height: 30px; border-radius: 50%;">
                         {{/if}}
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
                         <li><a class="dropdown-item" href="/users/profile">Profile</a></li>
                         <li><a class="dropdown-item" href="/settings">Settings</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li class="nav-item"><a class="dropdown-item" href="/users/logout">Logout</a></li>
                     </ul>
                 </li>
