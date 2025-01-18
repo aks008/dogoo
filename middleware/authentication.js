@@ -6,6 +6,7 @@ exports.authenticateUser = (req, res, next) => {
 
   // Check if the token is provided
   if (!token) {
+    return res.redirect(process.env.BASE_PATH);
     return res.status(401).json({ message: 'Authorization token required' });
   }
 
@@ -14,7 +15,7 @@ exports.authenticateUser = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
 
-   // You can log the user details if needed
+    // You can log the user details if needed
     // Check if the user role is "customer"
     if (req.user.role !== "customer") {
       return res.status(403).json({ message: 'Access denied. Insufficient role permissions.' });

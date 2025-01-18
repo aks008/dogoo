@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
 
 // Replace with your actual database name
-const MONGO_URI = 'mongodb+srv://aksbloggeracc:Akash1060@dogo.r9qs1.mongodb.net/?retryWrites=true&w=majority&appName=dogo';
+const MONGO_URI = 'mongodb+srv://dogobuscuits:hujp9F2D6YXKG85Y@cluster0.tdhw5.mongodb.net/Dogo';
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(MONGO_URI);
+        await mongoose.connect(MONGO_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
         console.log('MongoDB connected successfully');
     } catch (err) {
         console.error('Error connecting to MongoDB:', err.message);

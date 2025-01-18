@@ -3,7 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+require("./model/index")();
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var productRouter = require('./routes/products');
@@ -14,7 +14,6 @@ var adminRouter = require('./routes/admin');
 
 const { authenticateUser } = require('./middleware/authentication'); // Assuming JWT middleware
 var app = express();
-require("./model/index")();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
@@ -26,7 +25,7 @@ const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-ac
 const Handlebars = require('handlebars');
 const hbs = allowInsecurePrototypeAccess(Handlebars);
 hbs.registerHelper("eq", function (a, b) {
-    return a === b;
+  return a === b;
 });
 
 app.engine('hbs', engine({

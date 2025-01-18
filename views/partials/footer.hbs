@@ -1,40 +1,49 @@
 <style>
-    html, body {
-    height: 100%;
-    margin: 0;
-}
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+    }
 
-.container {
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
-}
+    .container {
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
 
-.main-footer {
-    margin-top: auto; /* Push the footer to the bottom */
-    background-color: #343a40; /* Optional: Adjust background color */
-    color: #fff; /* Optional: Adjust text color */
-    padding: 20px 0;
-    text-align: center;
-}
+    main {
+        flex: 1;
+        /* Takes up remaining space to push footer down */
+    }
 
-.main-footer a {
-    color: #fff; /* Ensures footer links are white */
-    text-decoration: none;
-}
+    .main-footer {
+        background-color: #343a40;
+        /* Optional: Adjust background color */
+        color: #fff;
+        /* Optional: Adjust text color */
+        padding: 20px 0;
+        text-align: center;
+    }
 
-.main-footer a:hover {
-    text-decoration: underline;
-}
+    .main-footer a {
+        color: #fff;
+        /* Ensures footer links are white */
+        text-decoration: none;
+    }
 
-    </style>
-    <footer class="main-footer bg-dark text-light py-4">
-        <div class="container text-center">
-            <p>Contact us at: info@dogfoodbusiness.com</p>
-            <ul class="list-inline">
-                <li class="list-inline-item"><a href="#" class="text-light">Facebook</a></li>
-                <li class="list-inline-item"><a href="#" class="text-light">Instagram</a></li>
-                <li class="list-inline-item"><a href="#" class="text-light">Twitter</a></li>
-            </ul>
-        </div>
-    </footer>
+    .main-footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+</head>
+
+<footer class="main-footer">
+    <div class="container text-center">
+        <p>Contact us at: info@dogfoodbusiness.com</p>
+        <ul class="list-inline">
+            <li class="list-inline-item"><a href="#" class="text-light">Facebook</a></li>
+            <li class="list-inline-item"><a href="#" class="text-light">Instagram</a></li>
+            <li class="list-inline-item"><a href="#" class="text-light">Twitter</a></li>
+        </ul>
+    </div>
+</footer>

@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const Users = require('../model/users');
 const Orders = require('../model/orders');
 const Products = require('../model/products');
+const delieverdMail = require("../service/deliverdEmail");
 
 
 // Route for viewing order details by orderNumber
@@ -156,13 +157,29 @@ router.delete('/products/:id', async (req, res) => {
 // Get all orders
 router.put('/status/change/:id', async (req, res) => {
 	try {
-		const orders = await Orders.updateOne({ _id: req.params.id },
+		const orderDetails = await Orders.findOne({ _id: req.params.id });
+		const order = await Orders.updateOne({
+			_id: req.params.id
+		},
 			{
 				$set: {
 					status: req.body.status
 				}
 			});
-		return res.status(200).json(orders);
+
+		if (req.body.status === "delivered") {
+			const userDetails = await Users.findOne({ _id: orderDetails.orderBy });
+			console.log(userDetails.email);
+			const order = {
+				orderNumber: orderDetails.orderNumber,
+				customerName: orderDetails.customerName,
+				customerEmail: userDetails.email,
+				orderDate: orderDetails.orderDate,
+				totalAmount: orderDetails.totalAmount
+			}
+			delieverdMail(order);
+		}
+		return res.status(200).json(order);
 	} catch (err) {
 		console.error(err);
 		return res.status(500).json({ message: 'Failed to fetch orders', error: err.message });
