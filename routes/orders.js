@@ -100,32 +100,35 @@ router.post('/paynow', async (req, res) => {
 		postData["orderBy"] = req.user.id;
 		postData["paymentMethod"] = "Cash on Delivery";
 		// Create a new order
-		const newOrder = new Order(postData);
-		const orderDetails = await newOrder.save();
-		await Cart.deleteOne({
-			userId: req.user.id
-		});
-		const user = await User.findOne({ _id: req.user.id });
+		if (totalPrice) {
+			const newOrder = new Order(postData);
+			const orderDetails = await newOrder.save();
+			await Cart.deleteOne({
+				userId: req.user.id
+			});
+			const user = await User.findOne({ _id: req.user.id });
 
-		await User.updateOne({
-			_id: req.user.id
-		}, {
-			$push: {
-				address: postData.address
+			await User.updateOne({
+				_id: req.user.id
+			}, {
+				$push: {
+					address: postData.address
+				}
+			});
+			const userDetails = await User.findOne({ _id: req.user.id });
+			const order = {
+				orderNumber: orderDetails.orderNumber,
+				customerName: orderDetails.customerName,
+				customerEmail: userDetails.email,
+				orderDate: orderDetails.orderDate,
+				totalAmount: orderDetails.totalAmount
 			}
-		});
-		const userDetails = await User.findOne({ _id: req.user.id });
-		const order = {
-			orderNumber: orderDetails.orderNumber,
-			customerName: orderDetails.customerName,
-			customerEmail: userDetails.email,
-			orderDate: orderDetails.orderDate,
-			totalAmount: orderDetails.totalAmount
+			order["customerEmail"] = userDetails.email;
+			order.date = moment(new Date()).format("DD-MM-YYYY");
+			orderMail(order);
+			return res.status(201).json({ message: 'Order placed successfully!', order: newOrder });
 		}
-		order["customerEmail"] = userDetails.email;
-		order.date = moment(new Date()).format("DD-MM-YYYY");
-		orderMail(order);
-		return res.status(201).json({ message: 'Order placed successfully!', order: newOrder });
+		return res.status(201).json({ message: 'Order placed successfully!' });
 	} catch (err) {
 		console.error(err);
 		return res.status(500).json({ message: 'Failed to place order', error: err.message });

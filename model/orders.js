@@ -4,7 +4,7 @@ const autoIncrement = require('mongoose-sequence')(mongoose);
 
 // Define the Order Schema
 const orderSchema = new mongoose.Schema({
-    orderNumber: { type: Number, unique: true }, 
+    orderNumber: { type: Number, unique: true },
     customerName: { type: String, required: true }, // Customer's full name
     customerPhone: { type: String, required: true }, // Customer's phone number
     address: [ // Address details (stored as an array to allow multiple addresses if needed)
@@ -14,7 +14,6 @@ const orderSchema = new mongoose.Schema({
             city: { type: String, required: true }, // City
             state: { type: String, required: true }, // State
             zip: { type: String, required: true }, // ZIP Code
-            country: { type: String, required: true }, // Country
             addressType: { type: String, enum: ['home', 'other'], required: true } // Address Type (Home or Other)
         }
     ],

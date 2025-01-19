@@ -23,14 +23,15 @@
     <h4><strong>Payment Method:</strong> Cash on Delivery</h4>
     <p>You will pay in cash when the product is delivered to your address.</p>
   </div>
-    
-    {{!-- {{#each profile.address}}
-        <div class="radio-container">
-           {{customerName}} +91 {{customerPhone}}<br>
-            <input type="radio" id="defaultOptionYes" name="setDefault" value={{_id}}> &nbsp required;
-            <label for="defaultOptionYes" data-id={{_id}}>  {{line1}}, {{line2}}, {{city}}, {{state}}, {{zip}}, {{country}}</p></label>
-        </div>
-    {{/each}} --}}
+
+  {{!-- {{#each profile.address}}
+  <div class="radio-container">
+    {{customerName}} +91 {{customerPhone}}<br>
+    <input type="radio" id="defaultOptionYes" name="setDefault" value={{_id}}> &nbsp required;
+    <label for="defaultOptionYes" data-id={{_id}}> {{line1}}, {{line2}}, {{city}}, {{state}}, {{zip}}, {{country}}</p>
+    </label>
+  </div>
+  {{/each}} --}}
   <!-- Address Form -->
   <div class="address-form">
     <h4>Please Enter Your Address</h4>
@@ -41,7 +42,7 @@
       </div>
       <div class="form-group">
         <label for="phone">Phone Number</label>
-        <input type="text" class="form-control my-3" id="phone" name="phone" required>
+        <input type="text" class="form-control my-3" id="phone" name="phone" value="+91 " required>
       </div>
 
       <!-- Address Fields -->
@@ -71,10 +72,6 @@
         <div class="form-group col-md-6">
           <label for="zip">ZIP Code</label>
           <input type="text" class="form-control my-3" id="zip" name="address[0].zip" required>
-        </div>
-        <div class="form-group col-md-6">
-          <label for="country">Country</label>
-          <input type="text" class="form-control my-3" id="country" name="address[0].country" required>
         </div>
       </div>
 
@@ -140,7 +137,6 @@
     const city = document.getElementById('city').value;
     const state = document.getElementById('state').value;
     const zip = document.getElementById('zip').value;
-    const country = document.getElementById('country').value;
     const instructions = document.getElementById('instructions').value;
 
     // Prepare the address object
@@ -152,7 +148,6 @@
       city,
       state,
       zip,
-      country,
       addressType, // Include the address type
     };
 
@@ -197,7 +192,7 @@
         Your order has been successfully confirmed. Please review your order details.
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-warning"  onclick="redirectOrderDetails()"
+        <button type="button" class="btn btn-warning" onclick="redirectOrderDetails()"
           style="width: 200px; border: none; padding: 10px 20px; font-weight: 600;">Close
         </button>
       </div>

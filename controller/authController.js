@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const serviceMail = require("../service/welcomeMail");
 exports.register = async (req, res) => {
-  const { email} = req.body;
+  const { email } = req.body;
   try {
     // Check if user already exists
     const userExists = await User.findOne({ email });
@@ -38,26 +38,26 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
-    
+
     // Compare the password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
-    
+
     // Create JWT token
-    const token = jwt.sign({ id: user._id ,role:"customer"}, process.env.JWT_SECRET, { expiresIn: '2h' });
-  
+    const token = jwt.sign({ id: user._id, role: "customer" }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
     // Set the token in a cookie (HTTP-Only cookie for security)
     res.cookie('token', token, {
       httpOnly: true, // This helps prevent XSS attacks by not allowing JavaScript access to the cookie
       secure: 'production', // Ensure cookies are sent only over HTTPS in production
       maxAge: 3600 * 2000, // Cookie expiry time (1 hour)
-    }); 
+    });
     res.status(200).json({
       message: 'Login successful',
       token,
-    }) 
+    })
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
@@ -69,7 +69,7 @@ exports.adminLogin = async (req, res) => {
     // Check if the user exists
     const user = await User.findOne({ email });
     console.log(user);
-    
+
     if (!user || !user.role || user.role !== "admin") {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
@@ -81,18 +81,18 @@ exports.adminLogin = async (req, res) => {
     }
 
     // Create JWT token
-    const token = jwt.sign({ id: user._id , role:"admin"}, process.env.JWT_SECRET, { expiresIn: '2h' });
-  
+    const token = jwt.sign({ id: user._id, role: "admin" }, process.env.JWT_SECRET, { expiresIn: '2h' });
+
     // Set the token in a cookie (HTTP-Only cookie for security)
     res.cookie('token', token, {
       httpOnly: true, // This helps prevent XSS attacks by not allowing JavaScript access to the cookie
       secure: 'production', // Ensure cookies are sent only over HTTPS in production
       maxAge: 3600 * 2000, // Cookie expiry time (1 hour)
-    }); 
+    });
     res.status(200).json({
       message: 'Login successful',
       token,
-    }) 
+    })
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });

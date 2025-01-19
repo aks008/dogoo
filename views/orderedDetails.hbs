@@ -1,80 +1,80 @@
+<style>
+  body {
+    background-color: #f8f9fa;
+  }
 
-  <style>
-    body {
-      background-color: #f8f9fa;
-    }
+  .card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    background-color: white;
+  }
 
-    .card {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      background-color: white;
-    }
+  .card-header {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    padding: 15px;
+  }
 
-    .card-header {
-      background-color: #007bff;
-      color: white;
-      font-weight: bold;
-      text-align: center;
-      padding: 15px;
-    }
+  .status-label {
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #fff;
+  }
 
-    .status-label {
-      font-weight: bold;
-      padding: 5px 10px;
-      border-radius: 5px;
-      color: #fff;
-    }
+  .status-pending {
+    background-color: orange;
+  }
 
-    .status-pending {
-      background-color: orange;
-    }
+  .status-shipped {
+    background-color: green;
+  }
 
-    .status-shipped {
-      background-color: green;
-    }
+  .status-delivered {
+    background-color: blue;
+  }
 
-    .status-delivered {
-      background-color: blue;
-    }
+  .status-cancelled {
+    background-color: red;
+  }
 
-    .status-cancelled {
-      background-color: red;
-    }
+  .product-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-right: 15px;
+  }
 
-    .product-image {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      margin-right: 15px;
-    }
+  .product-card {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+  }
 
-    .product-card {
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid #ddd;
-      padding: 10px 0;
-    }
+  .product-card:last-child {
+    border-bottom: none;
+  }
 
-    .product-card:last-child {
-      border-bottom: none;
-    }
+  .order-info,
+  .product-info {
+    margin-bottom: 20px;
+  }
 
-    .order-info, .product-info {
-      margin-bottom: 20px;
-    }
+  .order-summary {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
 
-    .order-summary {
-      font-size: 1.2em;
-      font-weight: bold;
-    }
-
-    .order-summary span {
-      font-size: 1.5em;
-      color: #28a745;
-    }
-  </style>
+  .order-summary span {
+    font-size: 1.5em;
+    color: #28a745;
+  }
+</style>
 </head>
 
 <body>

@@ -1,5 +1,5 @@
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* Make the navbar always fixed at the top */
         .main-header {
@@ -28,9 +28,9 @@
     </style>
 </head>
 
-<header class="main-header navbar navbar-expand-lg navbar-light bg-light">
+<header class="main-header navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#"><img src="/image/logo.png" alt="Dog Food Logo" style="height: 40px;"></a>
+        <a class="navbar-brand" href="#"><img src="/image/logo.png" alt="Dog Food Logo" style="height: 45px;"></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -39,30 +39,32 @@
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
+                <li class="nav-item"><a class="nav-link" href="/order/details">Orders</a></li>
                 <li class="nav-item"><a class="nav-link" href="/subscription">Subscription</a></li>
                 <li class="nav-item"><a class="nav-link" href="/feed">Feed For You</a></li>
-                <li class="nav-item"><a class="nav-link" href="/faqs">FAQs</a></li>
+                {{!-- <li class="nav-item"><a class="nav-link" href="/faqs">FAQs</a></li> --}}
                 <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
             </ul>
             <ul class="navbar-nav ms-auto"> <!-- Align to the right -->
                 <li class="nav-item"><a class="nav-link" href="/cart">
                         Cart &nbsp;<img src="/image/trolley.png" width="25px" height="25px" alt="" srcset=""><span
-                            class="mx-2 px-2" id="cartNumber" style="color: white; border-radius:100px"></span></a></li>
-                <li class="nav-item"><a class="nav-link" href="/order/details">Orders</a></li>
+                            class="mx-2 px-2" id="cartNumber" style="color: white; border-radius:100px"></span></a>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="userProfileDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
-                        {{#if profile.attachment.path}}
+                        Profile
+                        {{!-- {{#if profile.attachment.path}}
                         <img src="{{profile.attachment.path}}" alt=""
                             style="width: 30px; height: 30px; border-radius: 50%;">
                         {{else}}
                         <img src="/image/blank-profile-picture.png" alt=""
                             style="width: 30px; height: 30px; border-radius: 50%;">
-                        {{/if}}
+                        {{/if}} --}}
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
-                        <li><a class="dropdown-item" href="/users/profile">Profile</a></li>
-                        <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                        <li><a class="dropdown-item" href="/users/profile">Details</a></li>
+                        {{!-- <li><a class="dropdown-item" href="/settings">Settings</a></li> --}}
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -77,7 +79,6 @@
 
 
 <!-- Bootstrap JS and dependencies -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     // Function to fetch cart data and update the cart count
@@ -97,7 +98,7 @@
 
             } else {
                 cartCount.innerHTML = '';  // Clear the cart count
-                cartCount.style.backgroundColor = 'white';
+                cartCount.style.backgroundColor = '#212529';
                 cartCount.style.border = 'none';
 
             }
@@ -108,7 +109,7 @@
                 const cartCount = document.getElementById('cartNumber');
                 if (cartCount) {
                     cartCount.innerHTML = '';  // Clear the cart count
-                    cartCount.style.backgroundColor = 'white';
+                    cartCount.style.backgroundColor = '#212529';
                 }
             });
     }
