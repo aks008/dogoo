@@ -38,7 +38,72 @@
             opacity: 0;
         }
     }
+    /* Container for the product */
+  .product-card {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  /* Style for the image */
+  .product-card .card-img-top {
+    transition: transform 0.4s ease, opacity 0.4s ease;
+  }
+
+  /* Details container (hidden by default) */
+  .product-card .card-body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+  }
+
+  /* Hover effect */
+  .product-card:hover .card-img-top {
+    transform: rotate(15deg); /* Rotate image slightly on hover */
+  }
+
+  .product-card:hover .card-body {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .card-title, .card-text {
+    margin: 5px 0;
+  }
 </style>
+
+<main class="container mt-5">
+    <h1 class="text-center mb-4">Our Products</h1>
+    <div class="row">
+        {{#each products}}
+        <div class="col-md-4 mb-4" id="product-{{this._id}}">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
+                <div class="card h-100 d-flex flex-column product-card">
+                    <img src="{{this.imageUrl}}" class="card-img-top" alt="{{this.name}}">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{this.name}}</h5>
+                        <p class="card-text">₹{{this.price}}.00</p>
+                        {{#if this.discount}}
+                        <p class="card-text text-danger">Discount: {{this.discount}}%</p>
+                        {{/if}}
+                    </div>
+                </div>
+            </a>
+        </div>
+        {{/each}}
+    </div>
+</main>
 
 <main class="container mt-5">
     <h1 class="text-center mb-4">Our Products</h1>
@@ -61,7 +126,6 @@
         {{/each}}
     </div>
 </main>
-
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -129,7 +193,7 @@
                 })
                     .then(response => {
                         // Show success message
-                        axios.get(`cart/count`, {
+                        axios.get(`/cart/count`, {
                             headers: {
                                 'Authorization': `Bearer ${localStorage.getItem('token')}`
                             }
@@ -230,3 +294,4 @@
         </div>
     </div>
 </div>
+

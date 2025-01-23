@@ -11,6 +11,7 @@ var dashboardRouter = require('./routes/dashboard');
 var cartRouter = require('./routes/cart');
 var orderRouter = require('./routes/orders');
 var adminRouter = require('./routes/admin');
+var paymentRouter = require('./routes/paymentTransactions');
 
 const { authenticateUser } = require('./middleware/authentication'); // Assuming JWT middleware
 var app = express();
@@ -54,6 +55,7 @@ app.use('/products', productRouter);
 app.use('/dashboard', authenticateUser, dashboardRouter);
 app.use('/cart', authenticateUser, cartRouter);
 app.use('/order', authenticateUser, orderRouter);
+app.use('/payment', authenticateUser, paymentRouter);
 app.use('/admin', adminRouter);
 
 // catch 404 and forward to error handler

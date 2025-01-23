@@ -45,7 +45,7 @@
     border-radius: 20px;
     padding: 12px;
     font-size: 1rem;
-    background-color: #ff9800;
+    /* background-color: #ff9800; */
     border: none;
     color: white;
 }
@@ -92,5 +92,8 @@
     }
 }
 
-
+   .navbar {
+            background-color: rgb(23,22,20) !important;
+            /* Optional: make the navbar semi-transparent */
+        }
 

@@ -6,7 +6,10 @@ const jwt = require('jsonwebtoken');
 const Users = require('../model/users');
 const Orders = require('../model/orders');
 const Products = require('../model/products');
+const PaymentTransaction = require('../model/paymentTransaction');
 const delieverdMail = require("../service/deliverdEmail");
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
 
 // Route for viewing order details by orderNumber
@@ -114,6 +117,7 @@ router.get('/users', async (req, res) => {
 	}
 })
 
+
 router.get('/orders/:status', async (req, res) => {
 	try {
 		const orders = await Orders.find({ status: req.params.status }).sort({ _id: - 1 });
@@ -166,10 +170,8 @@ router.put('/status/change/:id', async (req, res) => {
 					status: req.body.status
 				}
 			});
-
 		if (req.body.status === "delivered") {
 			const userDetails = await Users.findOne({ _id: orderDetails.orderBy });
-			console.log(userDetails.email);
 			const order = {
 				orderNumber: orderDetails.orderNumber,
 				customerName: orderDetails.customerName,
@@ -178,12 +180,147 @@ router.put('/status/change/:id', async (req, res) => {
 				totalAmount: orderDetails.totalAmount
 			}
 			delieverdMail(order);
+		} else if (req.body.status === "confirmed") 
+			{
+			await PaymentTransaction.create({
+				orderId: orderDetails._id,
+				amount : orderDetails.totalAmount
+			})
 		}
 		return res.status(200).json(order);
 	} catch (err) {
 		console.error(err);
 		return res.status(500).json({ message: 'Failed to fetch orders', error: err.message });
 	}
+});
+
+// Route for viewing order details by orderNumber
+router.get('/order/:orderNumber', async (req, res) => {
+	const { orderNumber } = req.params;
+	try {
+		// Aggregate query to fetch the order based on orderNumber, and populate the product details
+		const order = await Orders.aggregate([
+			// Match the order by orderNumber
+			{
+				$match: { _id: new ObjectId(orderNumber) }
+			},
+			// Unwind the products array from the order
+			{
+				$unwind: "$products"
+			},
+			// Lookup the product details from the 'products' collection
+			{
+				$lookup: {
+					from: "products",  // Collection where product details are stored
+					localField: "products.productId",  // Field in Order's products array
+					foreignField: "_id",  // _id in the products collection
+					as: "productsDetails"  // Alias for merged product details
+				}
+			},
+			// Unwind the productsDetails to flatten the resulting array
+			{
+				$unwind: {
+					path: "$productsDetails",  // Flatten the productsDetails array
+					preserveNullAndEmptyArrays: true  // Keep documents even if there are no matches
+				}
+			},
+			// Combine fields from both products and productsDetails where their _id fields match
+			{
+				$match: {
+					$expr: {
+						$eq: ["$products.productId", "$productsDetails._id"]
+					}
+				}
+			},
+			// Merge both products and productsDetails fields into one document
+			{
+				$group: {
+					_id: "$orderNumber",  // Group by orderNumber
+					customerName: { $first: "$customerName" },
+					customerPhone: { $first: "$customerPhone" },
+					address: { $first: "$address" },
+					totalAmount: { $first: "$totalAmount" },
+					instructions: { $first: "$instructions" },
+					timeSlot: { $first: "$timeSlot" },
+					paymentMethod: { $first: "$paymentMethod" },
+					orderDate: {
+						$first: {
+							$dateToString: {
+								format: "%d-%m-%Y",  // dd-mm-yyyy format
+								date: "$orderDate"   // The field to format
+							}
+						}
+					},
+					status: { $first: "$status" },
+					orderNumber: { $first: "$orderNumber" },
+					products: {
+						$push: {
+							productId: "$products.productId",
+							quantity: "$products.quantity",
+							totalPrice: "$products.totalPrice",
+							name: "$productsDetails.name",
+							description: "$productsDetails.description",
+							price: "$productsDetails.price",
+							category: "$productsDetails.category",
+							stock: "$productsDetails.stock",
+							imageUrl: "$productsDetails.imageUrl",
+							discount: "$productsDetails.discount",
+							createdAt: "$productsDetails.createdAt"
+						}
+					}
+				}
+			}
+		]);
+		return res.status(200).json(order);
+		// res.render('order-details', { order: order[0] }); // Pass the first matched order to the template
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+
+
+// Route to get all payment transaction details with order lookup
+router.get('/payments', async (req, res) => {
+  try {
+    // Lookup the payment details by orderId using $lookup
+	 const { Types } = require('mongoose');
+
+	  const paymentDetails = await PaymentTransaction.aggregate([{
+			  $lookup: {
+				  from: "orders",
+				  localField: "orderIdObject",  // Use the converted ObjectId
+				  foreignField: "_id",
+				  as: "orderDetails"
+			  }
+		  }
+	  ]);
+	  console.log(paymentDetails)
+	return res.render("admin/payments", {
+			layout: 'admin',  // Use the dashboard layout
+			products: paymentDetails,  // Pass user data to the view
+			title: 'Dashboard',  // Title for the page,
+	});
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving payment transactions', error });
+  }
+});
+
+// Route to save payment details
+router.put('/payment-transaction/:id', async (req, res) => {
+  try {
+	await PaymentTransaction.updateOne({
+		  _id: req.params.id
+	}, {
+		  $set: {
+			paymentStatus: 'Completed',
+			paymentType: req.body.paymentType
+		}
+	});
+    return res.status(200).json({ message: 'Payment updated successfully', payment });
+  } catch (error) {
+    res.status(500).json({ message: 'Error udpate payment status', error });
+  }
 });
 
 // Login route

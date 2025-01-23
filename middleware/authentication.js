@@ -17,9 +17,7 @@ exports.authenticateUser = (req, res, next) => {
 
     // You can log the user details if needed
     // Check if the user role is "customer"
-    if (req.user.role !== "customer") {
-      return res.status(403).json({ message: 'Access denied. Insufficient role permissions.' });
-    }
+
     next(); // Proceed to the next middleware or route handler
   } catch (error) {
     console.error('Token verification failed:', error);

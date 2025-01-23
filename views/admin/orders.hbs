@@ -10,7 +10,7 @@
     color: white;
   }
 
-  .status-shipped {
+  .status-confirmed {
     background-color: green;
     color: white;
   }
@@ -24,10 +24,9 @@
     background-color: red;
     color: white;
   }
+  
 </style>
 <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.min.js"></script>
-
-
 <body>
   <div class="container" style="padding-top: 20px;">
     <div class="row">
@@ -40,7 +39,6 @@
               <th>Status</th>
               <th>Customer Name</th>
               <th>Phone</th>
-              <th>Users</th>
               <th>Date</th>
               <th>Total Amount</th>
               <th style="text-align: center;">Actions</th>
@@ -52,39 +50,36 @@
             <tr>
               <td>#{{orderNumber}}</td> <!-- Display Order ID -->
               <td>
-                <span class="status-label status-pending">{{status}}</span>
+                <span class="status-label status-{{status}}">{{status}}</span>
                 <!-- Dynamic Status with Styling -->
               </td>
               <td>{{customerName}}</td>
               <td>{{customerPhone}}</td>
-
-              <!-- Loop through the addresses array and display each address -->
-              <td>
-                {{orderBy}}
-              </td>
               <td>
                 {{orderDate}}
               </td>
               <td><b>₹{{totalAmount}}</b></td>
               <td>
-
-
                 <div class="d-flex gap-2">
-                  <button class="btn btn-primary" onclick="changeStatus('confirmed', this)" data-id="{{_id}}">
-                    Confirmed
-                  </button>
+              <button class="btn btn-dark" data-id="{{_id}}" onclick="viewOrderDetails(this)">
+                View
+              </button>
+                <button class="btn btn-primary confirmed" data-status="{{status}}" data-ids = "confirmed" onclick="changeStatus('confirmed', this)" data-id="{{_id}}">
+                  Confirmed
+                </button>
 
-                  <button class="btn btn-warning" onclick="changeStatus('delivered', this)" data-id="{{_id}}">
-                    Delivered
-                  </button>
-                  {{#if (eq status "delivered") }}
-                  <!-- Trigger Button for Payment Modal -->
-                  <button type="button" class="btn btn-success">
-                    Pay Now
-                  </button>
+                <button class="btn btn-warning delivered" data-status="{{status}}" data-ids = "delivered" onclick="changeStatus('delivered', this)" data-id="{{_id}}">
+                  Delivered
+                </button>
 
-                  {{/if }}
-                </div>
+
+                {{#if (eq status "delivered") }}
+                <!-- Pay Now Button -->
+                <button type="button" data-status="delivered" class="btn btn-success" onclick="openPaymentModal('{{orderNumber}}', '{{totalAmount}}')">
+                  Pay Now
+                </button>
+                {{/if}}
+              </div>
               </td>
             </tr>
             {{/each}}
@@ -94,36 +89,44 @@
     </div>
   </div>
 
-  <!-- Modal for Cash Payment -->
-  <div class="modal fade" id="cashPaymentModal" tabindex="-1" aria-labelledby="cashPaymentModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" style="max-width: 90%;">
+  <!-- Order Details Modal -->
+  <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog" style="max-width: 100%;">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="cashPaymentModalLabel">Cash Payment</h5>
+          <h5 class="modal-title" id="orderDetailsModalLabel">Order Details</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-          <form id="cashPaymentForm">
-            <div class="mb-3">
-              <label for="paymentAmount" class="form-label">Amount</label>
-              <input type="number" class="form-control" id="paymentAmount" disabled>
-            </div>
-            <div class="mb-3">
-              <label for="paymentMode" class="form-label">Payment Mode</label>
-              <input type="text" class="form-control" id="paymentMode" value="Cash" disabled>
-            </div>
-            <button type="submit" class="btn btn-primary">Pay Now</button>
-          </form>
+        <div class="modal-body" id="orderDetailsContent">
+          <!-- Order details will be loaded here -->
+        </div>
+        <div class="modal-footer d-flex justify-content-center">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
   </div>
 
 
+<!-- Payment Modal -->
+<div id="paymentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7);">
+  <div style="background:#f2f2f2; padding:20px; width:400px; margin:100px auto; border-radius:8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <h3 style="color:#333; font-family: Arial, sans-serif;">Payment Details</h3>
+    <p style="color:#555; font-family: Arial, sans-serif;">Order ID: <span id="modalOrderId" style="font-weight:bold;"></span></p>
+    <p style="color:#555; font-family: Arial, sans-serif;">Amount: <span id="modalAmount" style="font-weight:bold;"></span></p>
+    <label for="paymentType" style="font-family: Arial, sans-serif; color:#333;">Payment Type:</label>
+    <select id="paymentType" style="padding:5px; width:100%; margin-top:5px; border:1px solid #ccc; border-radius:5px;">
+      <option value="Cash">Cash</option>
+      <option value="UPI">UPI</option>
+    </select>
+    <br/><br/>
+    <button onclick="storePayment()" style="background-color:#4CAF50; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer;">Submit Payment</button>
+    <button onclick="closePaymentModal()" style="background-color:#f44336; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; margin-left:10px;">Cancel</button>
+  </div>
+</div>
 
 
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
     /**
     * Updates the order status via API.
@@ -153,4 +156,148 @@
           console.error(error);
         });
     }
-  </script>
+
+  document.addEventListener('DOMContentLoaded', () => {
+  // Hide buttons based on the 'data-status' and 'data-id'
+  hideButtonsByStatus();
+});
+
+function hideButtonsByStatus() {
+  // Select all buttons with the class 'btn'
+  const buttons = document.querySelectorAll('.btn');
+
+  // Loop through each button and check the 'data-status' and 'data-id'
+  buttons.forEach(button => {
+    const status = button.getAttribute('data-status');
+    const confirmed = document.getElementsByClassName('confirmed');
+  const delivered = document.getElementsByClassName('delivered');
+    const id = button.getAttribute('data-ids');
+    // If status is 'confirm' and id is 'confirm', hide the button
+    if (status === 'confirmed' && id === 'confirmed') {
+      button.style.display = 'none';
+    }else if(status === 'delivered' && id === 'delivered'){
+      button.style.display = 'none';
+      // Loop through the elements and hide each one
+      for (let i = 0; i < confirmed.length; i++) {
+        confirmed[i].style.display = 'none';
+      }
+    }else if(status === 'cancelled'){
+      for (let i = 0; i < confirmed.length; i++) {
+        confirmed[i].style.display = 'none';
+      }
+      for (let i = 0; i < delivered.length; i++) {
+        delivered[i].style.display = 'none';
+      }
+    }
+  });
+}
+    
+async function viewOrderDetails(button) {
+  const orderId = button.getAttribute('data-id');
+
+  // Show loading indicator
+  const modalBody = document.getElementById('orderDetailsContent');
+  modalBody.innerHTML = '<p>Loading...</p>';
+
+  try {
+    // Fetch order details from the API
+    const response = await axios.get(`/admin/order/${orderId}`);
+    const order = response.data[0];
+    console.log(response.data);
+    // Format and display order details in the modal
+    modalBody.innerHTML = `<table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 100%;">
+  <tr>
+    <th>Order ID</th>
+    <td>${order._id}</td>
+  </tr>
+  <tr>
+    <th>Customer Name</th>
+    <td>${order.customerName}</td>
+  </tr>
+  <tr>
+    <th>Status</th>
+    <td>${order.status}</td>
+  </tr>
+  <tr>
+    <th>Address</th>
+    <td>
+      <ul>
+        ${order.address?.map(address => `
+          <li>
+            ${address.line1}, ${address.line2}, ${address.city}, ${address.state}, ${address.zip}, ${address.country}
+            (${address.addressType})
+          </li>
+        `).join('')}
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <th>Items</th>
+    <td>
+      <ul>
+        ${order.products?.map(product => `
+          <li>
+            <img src="${product.imageUrl}" alt="${product.name}" style="width: 50px; height: auto;"/>
+            ${product.name} (Qty: <b> ${product.quantity} </b>) : <b> ₹${product.totalPrice} </b>
+          </li>
+        `).join('')}
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <th>Total Amount</th>
+    <td>₹${order.totalAmount}</td>
+  </tr>
+  <tr>
+    <th>Order Date</th>
+    <td>${new Date(order.orderDate).toLocaleDateString()}</td>
+  </tr>
+  <tr>
+    <th>Time Slot</th>
+    <td>${order.timeSlot}</td>
+  </tr>
+  <tr>
+    <th>Payment Method</th>
+    <td>${order.paymentMethod}</td>
+  </tr>
+  <tr>
+    <th>Instructions</th>
+    <td>${order.instructions}</td>
+  </tr>
+</table>
+`;
+
+    // Open the modal
+    const orderModal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
+    orderModal.show();
+  } catch (error) {
+    console.error('Error fetching order details:', error);
+    modalBody.innerHTML = '<p class="text-danger">Failed to load order details. Please try again later.</p>';
+  }
+
+}
+
+function openPaymentModal(orderId, amount) {
+    document.getElementById('modalOrderId').innerText = orderId;
+    document.getElementById('modalAmount').innerText = amount;
+    document.getElementById('paymentModal').style.display = 'block';
+  }
+  
+function closePaymentModal() {
+  document.getElementById('paymentModal').style.display = 'none';
+}
+  
+function storePayment() {
+  const orderId = document.getElementById('modalOrderId').innerText;
+  const amount = document.getElementById('modalAmount').innerText;
+  const paymentType = document.getElementById('paymentType').value;
+  
+  console.log('Storing Payment:', { orderId, amount, paymentType });
+  alert('Payment stored successfully!');
+  closePaymentModal();
+}
+
+</script>
+
+
+

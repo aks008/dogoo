@@ -16,20 +16,6 @@ const transporter = nodemailer.createTransport({
 // Helper function to send email
 function sendDeliverdMail(orderDetails) {
     try {
-        // Load the email template
-        // const templatePath = path.join('views', 'emails', 'deliverd-email.hbs');
-        // const templateSource = fs.readFileSync(templatePath, 'utf8');
-        // const template = handlebars.compile(templateSource);
-
-        // // Data to replace in the email template
-        // const emailContent = template({
-        //     orderNumber: orderDetails.orderNumber,
-        //     customerName: orderDetails.customerName,
-        //     deliveryDate: moment().format("DD/MM/YYYY"),
-        //     siteName: 'Dogo Biscuit', // Customizable site name or company name
-        //     siteUrl: "https://dogobiscuits.online" // URL for your site
-        // });
-
         // Send email
         const mailOptions = {
             from: process.env.EMAIL,

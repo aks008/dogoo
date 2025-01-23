@@ -1,21 +1,42 @@
 <!-- Contact Section -->
+<head>
+    <style>
+        /* Map container */
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 75%; /* Aspect ratio (height/width = 9/16) */
+            margin-bottom: 20px; /* Optional: add space below the map */
+        }
+
+        /* Responsive iframe */
+        .map-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
 <main class="container contact-info">
     <h2 class="text-center mt-5">Contact Us</h2>
     <div class="row mt-5">
         <div class="col-md-6">
             <p><strong></strong> Akash Rupareliya</p>
             <p><strong> <img src="image/phone-book-svgrepo-com.svg" alt="Phone :" srcset="" width="25px"
-                        style="margin-right:20px;"></strong>+91 8000757744</p>
+                        style="margin-right:20px;"></strong> <a href="tel:+918000757744" style="text-decoration: none; !important;color:black !important">+91 8000757744 </a></p>
             <p><strong><img src="image/email-svgrepo-com.svg" alt="Email :" srcset="" width="25px"
-                        style="margin-right:20px;"></strong> dogobuscuits@gmail.com</p>
+                        style="margin-right:20px;"></strong> <a href="mailto:dogobuscuits@gmail.com" style="text-decoration: none; !important;color:black !important">dogobuscuits@gmail.com</a> </p>
         </div>
         <div class="col-md-6" style="margin-bottom: 50px;">
             <!-- Map Embed -->
-            <div class="map-container">
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4481.416644872599!2d72.5375197482186!3d23.078680153960065!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e834103afe43d%3A0x9c43f50edb703989!2sJaybhanu%20Society!5e0!3m2!1sen!2sin!4v1737271996151!5m2!1sen!2sin"
-                    width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+             <div class="map-container">
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4481.416644872599!2d72.5375197482186!3d23.078680153960065!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e834103afe43d%3A0x9c43f50edb703989!2sJaybhanu%20Society!5e0!3m2!1sen!2sin!4v1737271996151!5m2!1sen!2sin"
+            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
     </div>

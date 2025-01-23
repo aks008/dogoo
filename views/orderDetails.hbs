@@ -1,44 +1,107 @@
 <style>
+  body {
+    background: linear-gradient(135deg, #f3f4f6, #e2e8f0);
+    font-family: 'Arial', sans-serif;
+  }
+
   .card {
-    display: flex;
-    flex-direction: column;
-    /* Ensures all content is stacked vertically */
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    background: #ffffff;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-header {
+    background: linear-gradient(145deg, #171614, #044994);
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    padding: 20px;
+    border-bottom: 2px solid #044994;
   }
 
   .card-body {
-    flex-grow: 1;
-    /* Makes sure the card body takes up available space */
+    padding: 25px;
   }
 
   .status-label {
     font-weight: bold;
-    padding: 5px;
-    border-radius: 5px;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    text-transform: uppercase;
   }
 
   .status-pending {
-    background-color: orange;
+    background: #ffb822;
     color: white;
   }
 
   .status-shipped {
-    background-color: green;
+    background: #28a745;
     color: white;
   }
 
   .status-delivered {
-    background-color: blue;
+    background: #17a2b8;
     color: white;
   }
 
   .status-cancelled {
-    background-color: red;
+    background: #dc3545;
     color: white;
   }
 
-  .order-btn {
-    margin-top: 15px;
-    text-align: center;
+  .order-btn a {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    border: none;
+    display: inline-block;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .btn-view {
+    background: linear-gradient(135deg, #6c757d, #495057);
+  }
+
+  .btn-view:hover {
+    background: linear-gradient(135deg, #495057, #343a40);
+  }
+
+  .btn-cancel {
+    background: linear-gradient(135deg, #ff4d4d, #cc0000);
+    margin-left: 10px;
+  }
+
+  .btn-cancel:hover {
+    background: linear-gradient(135deg, #cc0000, #990000);
+  }
+
+  .order-info p {
+    font-size: 0.95em;
+    color: #555;
+    margin-bottom: 8px;
+  }
+
+  .order-summary {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .order-summary span {
+    font-size: 1.4em;
+    color: #28a745;
   }
 </style>
 
@@ -49,44 +112,143 @@
       {{#each orders}}
       <div class="col-md-4 mb-4">
         <!-- Order Card -->
-        <div class="card h-100"> <!-- 'h-100' ensures the card takes full height of the container -->
-          <div class="card-header text-center">
-            <h5>#{{orderNumber}}</h5> <!-- Display Order ID -->
+        <div class="card h-100">
+          <div class="card-header">
+            <h5>Order #{{orderNumber}}</h5>
           </div>
           <div class="card-body">
             <!-- Order Status -->
             <div class="mb-3">
-              <label for="orderStatus" class="form-label">Status &nbsp;</label>
-              <span class="status-label status-pending">{{status}}</span>
-              <!-- Dynamic Status with Styling -->
+              <label class="form-label">Status: </label>
+              <span class="status-label status-{{status}}">{{status}}</span>
             </div>
 
-            <div class="mb-3">
-              <h6><strong>Customer Information:</strong></h6>
+            <div class="order-info">
               <p><strong>Name:</strong> {{customerName}}</p>
-              <p><strong>Phone:</strong> {{customerPhone}}</p>
+              <p><strong>Phone:</strong>+91 {{customerPhone}}</p>
 
               <!-- Loop through the addresses array and display each address -->
               {{#each address}}
-                  <p><strong>Address:</strong> {{this.line1}}, {{this.line2}}, {{this.city}}, {{this.state}}, {{this.zip}}, {{this.country}}</p>
+              <p><strong>Address:</strong> {{line1}}, {{line2}}, {{city}}, {{state}}, {{zip}}, {{country}}</p>
               {{/each}}
             </div>
-            
+
             <!-- Order Summary -->
-            <div class="d-flex justify-content-between mb-3">
-              <h6><strong>Total Price:</strong></h6>
-              <span><b>₹{{totalAmount}}</b></span>
-            </div>
-            
-            <!-- Order Details Button -->
-           <div class="order-btn text-start">
-                <a href="/order/{{orderNumber}}" class="btn btn-secondary">View Order Details</a>
+            <div class="d-flex justify-content-between align-items-center">
+              <h6 class="order-summary">Total:</h6>
+              <span>₹{{totalAmount}}</span>
             </div>
 
+            <!-- Order Details & Cancel Button -->
+            <div class="order-btn text-center mt-3">
+              <a href="/order/{{orderNumber}}" class="btn-view">View Details</a>
+              <a type="button" class="btn-cancel" data-bs-toggle="modal" data-status="{{status}}" data-id="{{_id}}" data-bs-target="#cancelOrderModal" onclick="setOrderIdInModal(this)">Cancel Order</a>
+            </div>
           </div>
         </div>
       </div>
       {{/each}}
     </div>
   </div>
+
+
+
+<!-- Cancel Order Modal -->
+<div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;"> <!-- Centered modal with a max width -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cancelOrderModalLabel">Cancel Order</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="p-3">
+        <p>Reason for cancellation:</p>
+        <span id="errorForReason" style="color: red;"></span>
+        <textarea id="reason" class="form-control" rows="4" placeholder="Provide a reason for cancellation..." required></textarea>
+      </div>
+      <div class="modal-body">
+        <!-- Message asking for cancellation confirmation -->
+        <p>Are you sure you want to cancel this order?</p>
+      </div>
+      <div class="modal-footer d-flex justify-content-center"> <!-- Center the buttons on the second line -->
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" onclick="confirmCancellation()">Confirm Cancellation</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Function to set the order ID in the modal when cancel button is clicked
+  function setOrderIdInModal(buttonElement) {
+    const orderId = buttonElement.getAttribute('data-id'); // Get order ID from data-id attribute
+    const modal = document.getElementById('cancelOrderModal');
+    modal.setAttribute('data-id', orderId); // Set the order ID in the modal's data-id attribute
+  }
+
+  // Function to handle the cancellation confirmation
+  function confirmCancellation() {
+    const reason = document.getElementById('reason').value.trim();
+    const modal = document.getElementById('cancelOrderModal');
+    const orderId = modal.getAttribute('data-id'); // Get order ID from modal's data-id attribute
+
+    if (!reason) {
+      document.getElementById('errorForReason').innerHTML = "Please enter cancellation reason";
+    } else {
+      // Prepare data to send to the API
+      const data = {
+        reason: reason,
+        status: "cancelled"
+      };
+
+      // Make the PUT request using Axios to cancel the order
+      axios.put(`/order/cancel/${orderId}`, data)
+        .then(response => {
+          // Handle success (e.g., show a success message, update UI)
+          // Close the modal after confirmation
+          const bootstrapModal = bootstrap.Modal.getInstance(modal);
+          bootstrapModal.hide();
+
+          // Remove any background blur manually
+          const modalBackdrop = document.querySelector('.modal-backdrop');
+          if (modalBackdrop) {
+            modalBackdrop.remove();
+          }
+          window.location.reload();
+        })
+        .catch(error => {
+          // Handle error (e.g., show an error message)
+          console.error('Error cancelling order:', error);
+          alert('Failed to cancel the order. Please try again.');
+        });
+    }
+  }
+</script>
+<!-- Toast Notification (Hidden by default) -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="successToast" class="toast align-items-center text-bg-success" role="alert" aria-live="assertive" aria-atomic="true" style="display: none;">
+    <div class="d-flex">
+      <div class="toast-body">
+        Order cancelled successfully!
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Optional JavaScript -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+  // Select all buttons with the class 'btn-cancel'
+  const cancelButtons = document.querySelectorAll('.btn-cancel');
+  
+  // Loop through each button and check the data-status attribute
+  cancelButtons.forEach(button => {
+    if (button.getAttribute('data-status') === 'cancelled') {
+      button.style.display = 'none';  // Hide button if status is 'canceled'
+    }
+  });
+});
+</script>
 </body>
+

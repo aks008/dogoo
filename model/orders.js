@@ -34,6 +34,9 @@ const orderSchema = new mongoose.Schema({
         enum: ['pending', 'confirmed', 'delivered', 'cancelled'],
         default: 'pending'
     },
+    cancelReason: {
+        type: String
+    },
     orderBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

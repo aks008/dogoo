@@ -5,6 +5,7 @@ const User = require('../model/users');
 const Cart = require('../model/cart');
 const mongoose = require('mongoose');
 const orderMail = require("../service/orderConfirm");
+const newOrderMailForAdmin = require("../service/newOrderMailForAdmin");
 const moment = require("moment");
 
 // Get all orders
@@ -126,6 +127,7 @@ router.post('/paynow', async (req, res) => {
 			order["customerEmail"] = userDetails.email;
 			order.date = moment(new Date()).format("DD-MM-YYYY");
 			orderMail(order);
+			newOrderMailForAdmin(order)
 			return res.status(201).json({ message: 'Order placed successfully!', order: newOrder });
 		}
 		return res.status(201).json({ message: 'Order placed successfully!' });
@@ -224,7 +226,6 @@ router.get('/:orderNumber', async (req, res) => {
 			}
 		]);
 
-
 		// If no order is found, redirect to the index page
 		if (order.length === 0) {
 			return res.redirect('/'); // Redirect to the index page
@@ -251,6 +252,22 @@ router.put('/status/change/:id', async (req, res) => {
 			{
 				$set: {
 					status: req.body.status
+				}
+			});
+		return res.status(200).json("sucess");
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ message: 'Failed to fetch orders', error: err.message });
+	}
+});
+
+router.put('/cancel/:id', async (req, res) => {
+	try {
+		await Order.updateOne({ _id: req.params.id },
+			{
+				$set: {
+					status: req.body.status,
+					cancelReason : req.body.reason
 				}
 			});
 		return res.status(200).json("sucess");

@@ -1,0 +1,59 @@
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Transactions</title>
+
+  <style>
+    .action-btn {
+      cursor: pointer;
+      color: red;
+    }
+    /* Table styling */
+    table {
+      width: 100%; /* Set table width to 100% */
+      border-collapse: collapse; /* Ensure borders collapse into a single border */
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    thead {
+      background-color: #f8f9fa; /* Light background for the header */
+    }
+    tbody tr:nth-child(even) {
+      background-color: #f2f2f2; /* Alternating row colors for better readability */
+    }
+    tbody tr:hover {
+      background-color: #e9ecef; /* Highlight row on hover */
+    }
+  </style>
+</head>
+
+  <div class="container text-center pt-2">
+    <h3 class="mb-4">Payment Transactions</h3>
+    
+    <!-- Table for Payment Transactions -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th scope="col" class="text-center">Order ID</th>
+          <th scope="col" class="text-center">Amount</th>
+          <th scope="col" class="text-center">Payment Type</th>
+          <th scope="col" class="text-center">Payment Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Loop through the transactions -->
+        {{#each transactions}}
+        {{transactions}}
+          <tr>
+            <td>{{orderId}}</td>
+            <td>₹{{amount}}</td>
+            <td>{{paymentType}}</td>
+            <td>{{paymentStatus}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+

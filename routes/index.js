@@ -4,7 +4,7 @@ const RenderUser = require("../middleware/userValidation")
 
 /* GET home page. */
 router.get('/', function (req, res) {
-  return RenderUser.renderUser(req, res, "index");
+return RenderUser.renderUser(req, res, "index");
 });
 
 router.get('/contact', function(req, res) {

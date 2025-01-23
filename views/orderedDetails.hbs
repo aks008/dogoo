@@ -1,45 +1,46 @@
 <style>
   body {
-    background-color: #f8f9fa;
+    background-color: #faf3e0; /* Light pet-friendly background */
+    font-family: Arial, sans-serif;
   }
 
   .card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f1e6d8;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-    background-color: white;
+    background-color: #ffffff;
   }
 
   .card-header {
-    background-color: #007bff;
+    background: linear-gradient(145deg, #171614, #044994);
     color: white;
-    font-weight: bold;
     text-align: center;
-    padding: 15px;
+    font-weight: bold;
+    padding: 20px;
+    border-bottom: 2px solid #044994;
   }
-
   .status-label {
     font-weight: bold;
     padding: 5px 10px;
     border-radius: 5px;
-    color: #fff;
+    color: white;
   }
 
   .status-pending {
-    background-color: orange;
+    background-color: #f5a623; /* Warm amber for pending */
   }
 
   .status-shipped {
-    background-color: green;
+    background-color: #48c774; /* Soft green for shipped */
   }
 
   .status-delivered {
-    background-color: blue;
+    background-color: #3498db; /* Calm blue for delivered */
   }
 
   .status-cancelled {
-    background-color: red;
+    background-color: #e74c3c; /* Bold red for cancelled */
   }
 
   .product-image {
@@ -47,13 +48,14 @@
     height: 100px;
     object-fit: cover;
     margin-right: 15px;
+    border-radius: 8px;
   }
 
   .product-card {
     display: flex;
     align-items: center;
-    border-bottom: 1px solid #ddd;
-    padding: 10px 0;
+    border-bottom: 1px solid #f1e6d8;
+    padding: 15px 0;
   }
 
   .product-card:last-child {
@@ -68,14 +70,22 @@
   .order-summary {
     font-size: 1.2em;
     font-weight: bold;
+    color: #2d3436; /* Darker text for better readability */
   }
 
   .order-summary span {
     font-size: 1.5em;
-    color: #28a745;
+    color: #f28d1a; /* Highlight total amount with the header color */
+  }
+
+  h6 {
+    color: #2c3e50; /* Darker text for product names */
+  }
+
+  p {
+    color: #7f8c8d; /* Soft grey for text */
   }
 </style>
-</head>
 
 <body>
 
@@ -100,7 +110,7 @@
             <div class="order-info mb-3">
               <p><strong>Date:</strong> {{orderDate}}</p>
               <p><strong>Name:</strong> {{customerName}}</p>
-              <p><strong>Phone:</strong> {{customerPhone}}</p>
+              <p><strong>Phone:</strong>+91 {{customerPhone}}</p>
 
               <!-- Loop through the addresses array and display each address -->
               {{#each address}}
@@ -129,8 +139,7 @@
 
             <!-- Order Summary -->
             <div class="order-summary d-flex justify-content-between">
-              <h6><strong>Total Amount:</strong></h6>
-              <span>₹{{totalAmount}}</span>
+               <h5>Total Amount: ₹{{totalAmount}}</h5>
             </div>
           </div>
         </div>
@@ -138,3 +147,5 @@
       {{/each}}
     </div>
   </div>
+
+</body>
