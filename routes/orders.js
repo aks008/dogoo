@@ -3,6 +3,7 @@ const router = express.Router();
 const Order = require('../model/orders');
 const User = require('../model/users');
 const Cart = require('../model/cart');
+const Address = require('../model/address');
 const mongoose = require('mongoose');
 const orderMail = require("../service/orderConfirm");
 const newOrderMailForAdmin = require("../service/newOrderMailForAdmin");
@@ -267,13 +268,61 @@ router.put('/cancel/:id', async (req, res) => {
 			{
 				$set: {
 					status: req.body.status,
-					cancelReason : req.body.reason
+					cancelReason: req.body.reason
 				}
 			});
 		return res.status(200).json("sucess");
 	} catch (err) {
 		console.error(err);
 		return res.status(500).json({ message: 'Failed to fetch orders', error: err.message });
+	}
+});
+
+router.post('/address/save', async (req, res) => {
+	try {
+		req.body["userId"] = req.user.id;
+		const orders = await Address.create(req.body);
+		console.log('API Response:', orders); // Log the created address
+		return res.status(201).json({
+			data: orders
+		});
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ message: 'Failed to fetch orders', error: err.message });
+	}
+});
+
+
+router.get('/address/list', async (req, res) => {
+	try {
+		const orders = await Address.find({ userId: req.user.id });
+		return res.status(200).json(orders);
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ message: 'Failed to fetch orders', error: err.message });
+	}
+});
+
+router.get('/address/:id', async (req, res) => {
+	try {
+		const order = await Address.findOne({ _id: req.params.id });
+		return res.status(200).json(order);
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ message: 'Failed to fetch orders', error: err.message });
+	}
+});
+
+
+router.put('/address/:id', async (req, res) => {
+	try {
+		await Address.findOne({ _id: req.params.id }, {
+			$set: req.body
+		});
+		return res.status(200).json("Updated successfully");
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ message: 'Failed to edit orders', error: err.message });
 	}
 });
 

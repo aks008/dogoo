@@ -1,0 +1,103 @@
+<div id="existingAddressSection">
+    <h4>Select an Existing Address</h4>
+    <div id="addressList" class="mb-3">
+        <!-- Dynamically generated address radio buttons go here -->
+    </div>
+    <button id="addAddressButton" class="btn btn-warning">Add a New Address</button>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const addAddressButton = document.getElementById('addAddressButton');
+        const addressForm = document.querySelector('.address-form');
+        const addressList = document.getElementById('addressList');
+
+        addresses = []; // Array to store fetched addresses
+
+        // Function to fetch addresses from the API
+        async function fetchAddresses() {
+            try {
+                const response = await axios.get('/order/address/list', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    }
+                }); // Replace with your actual endpoint
+                addresses = response.data;
+                renderAddresses(addresses);
+            } catch (error) {
+                console.error('Error fetching addresses:', error);
+                addressList.innerHTML = '<p>Failed to load addresses. Please try again later.</p>';
+            }
+        }
+
+        // Function to render addresses in the DOM
+        function renderAddresses(addresses) {
+            addressList.innerHTML = '';
+            if (addresses.length > 0) {
+                addresses.forEach(address => {
+                    const addressHtml = `
+                        <br>
+                        <div class="form-check position-relative mb-3 p-3 border rounded shadow-sm">
+                        <div>
+                            <input type="radio" class="form-check-input" name="selectedAddress" id="address-${address._id}" value="${address._id}">
+                            <label class="form-check-label" for="address-${address._id}">
+                                <b>${address.name}</b>   +91${address.phone}<br>
+                                ${address.email}<br>
+                                ${address.line1}, ${address.line2 ? address.line2 + ', ' : ''}${address.city}, ${address.state} - ${address.zip}
+                            </label>
+                        </div>
+                        <button onclick="openModal('${address._id}')" class="fas fa-edit text-secondary position-absolute top-0 end-0 m-2" style="background-color:transparent;border:2px solid transparent "><i   style="cursor: pointer;" title="Edit Address"></i></button>
+                    </div>`;
+
+                    addressList.insertAdjacentHTML('beforeend', addressHtml);
+                });
+            } else {
+                addressList.innerHTML = '<p>No addresses found. Please add a new address.</p>';
+            }
+        }
+
+        // Toggle visibility of the address form
+        addAddressButton.addEventListener('click', () => {
+            if (addressForm.classList.contains('hidden')) {
+                addressForm.classList.remove('hidden');
+                addAddressButton.textContent = 'Close Address Form';
+            } else {
+                addressForm.classList.add('hidden');
+                addAddressButton.textContent = 'Add a New Address';
+            }
+        });
+
+        // Fetch and render addresses when the page loads
+        await fetchAddresses();
+
+        // Modal functionality
+        const modal = document.getElementById('myModal');
+        const openModalBtns = document.querySelectorAll('#openModalBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+
+        // Function to open the modal
+        openModalBtns.forEach(button => {
+            button.addEventListener('click', function () {
+                modal.style.display = 'block'; // Show the modal
+            });
+        });
+
+        // Function to close the modal
+        function closeModal() {
+            modal.style.display = 'none'; // Hide the modal
+        }
+
+        // Close the modal when the user clicks on the close button
+        closeModalBtn.addEventListener('click', closeModal);
+
+        // Close the modal if the user clicks outside of it
+        window.addEventListener('click', function (event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+    });
+
+
+</script>

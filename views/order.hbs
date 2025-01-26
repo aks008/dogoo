@@ -24,100 +24,8 @@
     <p>You will pay in cash when the product is delivered to your address.</p>
   </div>
 
-  {{!-- {{#each profile.address}}
-  <div class="radio-container">
-    {{customerName}} +91 {{customerPhone}}<br>
-    <input type="radio" id="defaultOptionYes" name="setDefault" value={{_id}}> &nbsp required;
-    <label for="defaultOptionYes" data-id={{_id}}> {{line1}}, {{line2}}, {{city}}, {{state}}, {{zip}}, {{country}}</p>
-    </label>
-  </div>
-  {{/each}} --}}
-  <!-- Address Form -->
-  <div class="address-form">
-    <h4>Please Enter Your Address</h4>
-    <form id="orderForm" method="POST">
-      <div class="form-group">
-        <label for="name">Full Name</label>
-        <input type="text" class="form-control my-3" id="name" name="name" required>
-      </div>
-      <div class="form-group">
-        <label for="phone">Phone Number</label>
-        <input type="text" class="form-control my-3" id="phone" name="phone" value="+91 " required>
-      </div>
-
-      <!-- Address Fields -->
-      <div class="row">
-        <div class="form-group col-md-6">
-          <label for="line1">Address Line 1</label>
-          <input type="text" class="form-control my-3" id="line1" name="address[0].line1" required>
-        </div>
-        <div class="form-group col-md-6">
-          <label for="line2">Address Line 2</label>
-          <input type="text" class="form-control my-3" id="line2" name="address[0].line2" required>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="form-group col-md-6">
-          <label for="city">City</label>
-          <input type="text" class="form-control my-3" id="city" name="address[0].city" required>
-        </div>
-        <div class="form-group col-md-6">
-          <label for="state">State</label>
-          <input type="text" class="form-control my-3" id="state" name="address[0].state" required>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="form-group col-md-6">
-          <label for="zip">ZIP Code</label>
-          <input type="text" class="form-control my-3" id="zip" name="address[0].zip" required>
-        </div>
-      </div>
-
-      <!-- Additional Instructions -->
-      <div class="form-group">
-        <label for="instructions">Additional Instructions</label>
-        <textarea class="form-control my-3" id="instructions" name="instructions" rows="2"></textarea>
-      </div>
-
-      <!-- Address Type (Home or Other Place) -->
-      <div class="form-group row">
-        <label class="col-md-3 col-form-label">Address Type</label>
-        <div class="col-md-9">
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="addressType" id="homeAddress" value="home">
-            <label class="form-check-label" for="homeAddress">Home</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="addressType" id="otherAddress" value="other">
-            <label class="form-check-label" for="otherAddress">Other Place</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- Time Selection -->
-      <div class="form-group row">
-        <label class="col-md-3 col-form-label">Select Time</label>
-        <div class="col-md-9">
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="timeSlot" id="time1" value="10am-6pm">
-            <label class="form-check-label" for="time1">10am - 6pm</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="timeSlot" id="time2" value="10am-9pm">
-            <label class="form-check-label" for="time2">10am - 9pm</label>
-          </div>
-        </div>
-      </div>
-
-       <span id="delivery-message" style="color: green;"></span>
-      <!-- Submit Button -->
-      <button type="submit" class="btn btn-warning w-50 my-4 d-block mx-auto"
-        style="margin-bottom: 150px !important;">Confirm Order</button>
-    </form>
-  </div>
-
+  {{> AlreadyDefinedAddress }}
+  {{> addressAdd }}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -243,30 +151,30 @@
     window.location.href = '/order/details';  // Adjust the URL to your order details page URL
   }
 
-    function getUpcomingSunday() {
-      const today = new Date();
-      const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  function getUpcomingSunday() {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
 
-      // Calculate days until the next Sunday
-      const daysUntilSunday = (7 - dayOfWeek) % 7 || 7;
+    // Calculate days until the next Sunday
+    const daysUntilSunday = (7 - dayOfWeek) % 7 || 7;
 
-      // Calculate upcoming Sunday date
-      const upcomingSunday = new Date();
-      upcomingSunday.setDate(today.getDate() + daysUntilSunday);
+    // Calculate upcoming Sunday date
+    const upcomingSunday = new Date();
+    upcomingSunday.setDate(today.getDate() + daysUntilSunday);
 
-      // Format the date as YYYY-MM-DD
-      const formattedDate = upcomingSunday.toISOString().split('T')[0];
+    // Format the date as YYYY-MM-DD
+    const formattedDate = upcomingSunday.toISOString().split('T')[0];
 
-      return { formattedDate, daysUntilSunday };
-    }
+    return { formattedDate, daysUntilSunday };
+  }
 
-    function displayDeliveryMessage() {
-      const { formattedDate, daysUntilSunday } = getUpcomingSunday();
-      const message = `Your order will be delivered on ${formattedDate} ( With in ${daysUntilSunday} days).`;
-      document.getElementById('delivery-message').textContent = message;
-    }
+  function displayDeliveryMessage() {
+    const { formattedDate, daysUntilSunday } = getUpcomingSunday();
+    const message = `Your order will be delivered on ${formattedDate} ( With in ${daysUntilSunday} days).`;
+    document.getElementById('delivery-message').textContent = message;
+  }
 
-    displayDeliveryMessage();
+  displayDeliveryMessage();
 
 
 </script>

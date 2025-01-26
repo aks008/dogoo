@@ -5,7 +5,7 @@ const MONGO_URI = 'mongodb+srv://dogobuscuits:hujp9F2D6YXKG85Y@cluster0.tdhw5.mo
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(MONGO_URI, {
+        mongoose.connect(MONGO_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true
         });
@@ -17,3 +17,4 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
+

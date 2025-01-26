@@ -6,9 +6,9 @@ function togglePassword(id) {
     passwordField.type = fieldType;
 }
 
-    // Confirm password validation
+// Confirm password validation
 document.addEventListener("DOMContentLoaded", function () {
-     document.getElementById("registerForm").addEventListener("submit", function (event) {
+    document.getElementById("registerForm").addEventListener("submit", function (event) {
         event.preventDefault();
 
         // Clear previous error messages
@@ -80,50 +80,50 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Registration logic
-         axios.post('/users/register', { firstName, lastName, gender, birthdate, email, phone, password })
-             .then(successResponse => {
-                 // Call login API
-                 return axios.post('/users/login', { email, password });
-             })
-             .then(loginResponse => {
-                 const token = loginResponse.data.token;
-                 localStorage.setItem('token', token);
-                 window.location.href = "/"; // Redirect after login
-             })
-             .catch(error => {
-                 console.log(error);
-                 if (error.response && error.response.status === 400) {
-                     // User already exists
-                     errorElement.textContent = "User already exists.";
-                     errorElement.style.color = "red";
-                 } else {
-                     console.error('Error:', error);
-                     alert("An unexpected error occurred. Please try again.");
-                 }
-             });
+        axios.post('/users/register', { firstName, lastName, gender, birthdate, email, phone, password })
+            .then(successResponse => {
+                // Call login API
+                return axios.post('/users/login', { email, password });
+            })
+            .then(loginResponse => {
+                const token = loginResponse.data.token;
+                localStorage.setItem('token', token);
+                window.location.href = "/"; // Redirect after login
+            })
+            .catch(error => {
+                console.log(error);
+                if (error.response && error.response.status === 400) {
+                    // User already exists
+                    errorElement.textContent = "User already exists.";
+                    errorElement.style.color = "red";
+                } else {
+                    console.error('Error:', error);
+                    alert("An unexpected error occurred. Please try again.");
+                }
+            });
     });
 
 
-    document.getElementById('loginForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent the form from submitting the traditional way
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    // Send login request via AJAX (using Axios)
-    axios.post(`/users/login`, { email, password })
-        .then(response => {
-            console.log('Login success:', response);
-            // Handle login success, such as redirecting to the dashboard
-            window.location.href = "/";  // Redirect to the dashboard page or desired route
-        })
-        .catch(error => {
-            console.error('Login error:', error);
-            // Display error message on failure
-            const formError = document.getElementById('formErrorForLogin');
-            formError.style.display = 'block'; // Show the error message
-            formError.innerHTML = 'Invalid credentials. Please try again.'; // Display custom error message
-        });
-});
+    document.getElementById('loginForm').addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+
+        // Send login request via AJAX (using Axios)
+        axios.post(`/users/login`, { email, password })
+            .then(response => {
+                localStorage.setItem('token', response.data.token);
+                // Handle login success, such as redirecting to the dashboard
+                window.location.href = "/";  // Redirect to the dashboard page or desired route
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                // Display error message on failure
+                const formError = document.getElementById('formErrorForLogin');
+                formError.style.display = 'block'; // Show the error message
+                formError.innerHTML = 'Invalid credentials. Please try again.'; // Display custom error message
+            });
+    });
 });
 
 

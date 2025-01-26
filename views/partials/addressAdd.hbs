@@ -1,0 +1,158 @@
+<style>
+    .hidden {
+        display: none;
+    }
+</style>
+
+<div class="container my-4">
+    <!-- Add Address Button -->
+
+    <!-- Address Form -->
+    <!-- Add New Address Form -->
+    <div id="newAddressForm" class="hidden">
+        <h4>Add a New Address</h4>
+        <form id="addressForm">
+            <div class="mb-3">
+                <label for="name" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label">Email ID</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <input type="text" class="form-control" id="phone" name="phone" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="line1" class="form-label">Address Line 1</label>
+                    <input type="text" class="form-control" id="line1" name="line1" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="line2" class="form-label">Address Line 2</label>
+                    <input type="text" class="form-control" id="line2" name="line2">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" class="form-control" id="city" name="city" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="state" class="form-label">State</label>
+                    <input type="text" class="form-control" id="state" name="state" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="zip" class="form-label">ZIP Code</label>
+                <input type="text" class="form-control" id="zip" name="zip" required>
+            </div>
+            <!-- Address Type Radio Buttons -->
+            <div class="mb-3">
+                <label class="form-label">Address Type : </label>
+                <input class="form-check-input" type="radio" name="addressType" id="homeType" value="Home" required>
+                <label class="form-check-label" for="homeType">Home</label>
+                <input class="form-check-input" type="radio" name="addressType" id="officeType" value="Office">
+                <label class="form-check-label" for="officeType">Office</label>
+                <input class="form-check-input" type="radio" name="addressType" id="otherType" value="Other">
+                <label class="form-check-label" for="otherType">Other</label>
+            </div>
+            <button type="button" id="cancelAddressButton" class="btn btn-secondary">Cancel</button>
+            <button type="submit" class="btn btn-warning">Add Address</button>
+        </form>
+    </div>
+    <!-- Submit Button -->
+    <div class="mt-4">
+        <button id="submitOrderButton" class="btn btn-warning w-100">Confirm and Proceed</button>
+    </div>
+</div>
+</div>
+{{> editAddress }}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const existingAddressSection = document.getElementById('existingAddressSection');
+        const newAddressForm = document.getElementById('newAddressForm');
+        const addressList = document.getElementById('addressList');
+        const addAddressButton = document.getElementById('addAddressButton');
+        const cancelAddressButton = document.getElementById('cancelAddressButton');
+        const addressForm = document.getElementById('addressForm');
+
+        function renderAddresses() {
+            addressList.innerHTML = '';
+            if (addresses.length > 0) {
+                addresses.forEach(address => {
+                    const addressHtml = `   
+                        <br>
+                        <div class="form-check position-relative mb-3 p-3 border rounded shadow-sm">
+                        <div>
+                            <input type="radio" class="form-check-input" name="selectedAddress" id="address-${address.id}" value="${address.id}">
+                            <label class="form-check-label" for="address-${address.id}">
+                                <b>${address.name}</b>   +91${address.phone}<br>
+                                ${address.email}<br>
+                                ${address.line1}, ${address.line2 ? address.line2 + ', ' : ''}${address.city}, ${address.state} - ${address.zip}
+                            </label>
+                        </div>
+
+                        <!-- Edit Icon positioned at the top-right corner -->
+                        <button onclick="openModal()">Open Modal</button>
+                        <i class="fas fa-edit text-secondary position-absolute top-0 end-0 m-2"  style="cursor: pointer;" onclick="editAddress(${address.id})" title="Edit Address"></i>
+                    </div>`;
+                    addressList.insertAdjacentHTML('beforeend', addressHtml);
+                });
+            } else {
+                addressList.innerHTML = '<p>No addresses found. Please add a new address.</p>';
+            }
+        }
+
+        addAddressButton.addEventListener('click', () => {
+            existingAddressSection.classList.add('hidden');
+            newAddressForm.classList.remove('hidden');
+        });
+
+        cancelAddressButton.addEventListener('click', () => {
+            newAddressForm.classList.add('hidden');
+            existingAddressSection.classList.remove('hidden');
+        });
+
+        addressForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(addressForm);
+            const newAddress = Object.fromEntries(formData.entries());
+
+            const response = await axios.post('/order/address/save', newAddress, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            console.log('Response status:', response.status);
+            if (response.status === 201) {
+                const savedAddress = response.data.data;
+                addresses.push({ id: savedAddress.id, ...savedAddress });
+                addressForm.reset();
+                newAddressForm.classList.add('hidden');
+                existingAddressSection.classList.remove('hidden');
+                renderAddresses();
+            } else {
+                alert('Failed to save the address. Please try again.');
+            }
+
+        });
+
+        submitOrderButton.addEventListener('click', () => {
+            const selectedAddressId = document.querySelector('input[name="selectedAddress"]:checked')?.value;
+            if (selectedAddressId) {
+                console.log('Selected Address ID:', selectedAddressId);
+                alert('Order submitted with selected address!');
+            } else {
+                alert('Please select or add an address!');
+            }
+        });
+
+        renderAddresses();
+    });
+</script>

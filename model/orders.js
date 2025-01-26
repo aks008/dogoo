@@ -14,7 +14,7 @@ const orderSchema = new mongoose.Schema({
             city: { type: String, required: true }, // City
             state: { type: String, required: true }, // State
             zip: { type: String, required: true }, // ZIP Code
-            addressType: { type: String, enum: ['home', 'other'], required: true } // Address Type (Home or Other)
+            addressType: { type: String, enum: ['Home', 'Other', 'Office'], required: true } // Address Type (Home or Other)
         }
     ],
     instructions: { type: String, default: '' }, // Additional delivery instructions

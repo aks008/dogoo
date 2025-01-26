@@ -38,49 +38,53 @@
             opacity: 0;
         }
     }
+
     /* Container for the product */
-  .product-card {
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-  }
+    .product-card {
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
 
-  /* Style for the image */
-  .product-card .card-img-top {
-    transition: transform 0.4s ease, opacity 0.4s ease;
-  }
+    /* Style for the image */
+    .product-card .card-img-top {
+        transition: transform 0.4s ease, opacity 0.4s ease;
+    }
 
-  /* Details container (hidden by default) */
-  .product-card .card-body {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-  }
+    /* Details container (hidden by default) */
+    .product-card .card-body {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background-color: rgba(0, 0, 0, 0.6);
+        /* Semi-transparent background */
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
 
-  /* Hover effect */
-  .product-card:hover .card-img-top {
-    transform: rotate(15deg); /* Rotate image slightly on hover */
-  }
+    /* Hover effect */
+    .product-card:hover .card-img-top {
+        transform: rotate(15deg);
+        /* Rotate image slightly on hover */
+    }
 
-  .product-card:hover .card-body {
-    opacity: 1;
-    visibility: visible;
-  }
+    .product-card:hover .card-body {
+        opacity: 1;
+        visibility: visible;
+    }
 
-  .card-title, .card-text {
-    margin: 5px 0;
-  }
+    .card-title,
+    .card-text {
+        margin: 5px 0;
+    }
 </style>
 
 <main class="container mt-5">
@@ -195,7 +199,7 @@
                         // Show success message
                         axios.get(`/cart/count`, {
                             headers: {
-                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                'Authorization': `Bearer ${localStorage.setItem('token')}`
                             }
                         })
                             .then(response => {
@@ -294,4 +298,3 @@
         </div>
     </div>
 </div>
-
