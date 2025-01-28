@@ -66,7 +66,21 @@
     </div>
     <!-- Submit Button -->
     <div class="mt-4">
+        <div class="mb-3">
+            <label class="form-label">Select Delivery Time : </label> <br>
+            <input class="form-check-input" type="radio" name="timeSlot" id="firstHalf" value="9AM - 3PM" required>
+            <label class="form-check-label" style="padding-right: 5%;" for="homeType">9am - 3pm</label>
+            <input class="form-check-input" type="radio" name="timeSlot" id="secondHalf" value="3PM - 9PM">
+            <label class="form-check-label" style="padding-right: 5%;" for="officeType">3pm - 9pm</label>
+            <input class="form-check-input" type="radio" name="timeSlot" id="fullDay" value="9AM - 9PM">
+            <label class="form-check-label" style="padding-right: 5%;" for="otherType">9am - 9pm</label>
+        </div>
+        <textarea id="instructionDetails" class="form-control mb-3" rows="4"
+            placeholder="Delivery Instruction"></textarea>
+        <span id="orderError" class="text-danger"></span>
         <button id="submitOrderButton" class="btn btn-warning w-100">Confirm and Proceed</button>
+
+        {{!-- <button id="payBtn" class="btn btn-warning w-100">Pay Now</button> --}}
     </div>
 </div>
 </div>
@@ -84,22 +98,20 @@
             addressList.innerHTML = '';
             if (addresses.length > 0) {
                 addresses.forEach(address => {
-                    const addressHtml = `   
+                    const addressHtml = `
                         <br>
                         <div class="form-check position-relative mb-3 p-3 border rounded shadow-sm">
                         <div>
-                            <input type="radio" class="form-check-input" name="selectedAddress" id="address-${address.id}" value="${address.id}">
-                            <label class="form-check-label" for="address-${address.id}">
+                            <input type="radio" class="form-check-input" name="selectedAddress" id="address-${address._id}" value="${address._id}">
+                            <label class="form-check-label" for="address-${address._id}">
                                 <b>${address.name}</b>   +91${address.phone}<br>
                                 ${address.email}<br>
                                 ${address.line1}, ${address.line2 ? address.line2 + ', ' : ''}${address.city}, ${address.state} - ${address.zip}
                             </label>
                         </div>
-
-                        <!-- Edit Icon positioned at the top-right corner -->
-                        <button onclick="openModal()">Open Modal</button>
-                        <i class="fas fa-edit text-secondary position-absolute top-0 end-0 m-2"  style="cursor: pointer;" onclick="editAddress(${address.id})" title="Edit Address"></i>
-                    </div>`;
+                        <button onclick="openModal('${address._id}')" class="fas fa-edit text-secondary position-absolute top-0 end-0 m-2" style="background-color:transparent;border:2px solid transparent "><i   style="cursor: pointer;" title="Edit Address"></i></button>
+                    </div>
+                    `;
                     addressList.insertAdjacentHTML('beforeend', addressHtml);
                 });
             } else {
@@ -129,7 +141,6 @@
                 },
             });
 
-            console.log('Response status:', response.status);
             if (response.status === 201) {
                 const savedAddress = response.data.data;
                 addresses.push({ id: savedAddress.id, ...savedAddress });
@@ -143,13 +154,53 @@
 
         });
 
-        submitOrderButton.addEventListener('click', () => {
+        submitOrderButton.addEventListener('click', async () => {
             const selectedAddressId = document.querySelector('input[name="selectedAddress"]:checked')?.value;
-            if (selectedAddressId) {
-                console.log('Selected Address ID:', selectedAddressId);
-                alert('Order submitted with selected address!');
-            } else {
-                alert('Please select or add an address!');
+            const timeSlot = document.querySelector('input[name="timeSlot"]:checked')?.value;
+            const instructionDetails = document.getElementById('instructionDetails').value || 'No instructions provided';
+            const errorSpan = document.getElementById('orderError');
+
+            if (!selectedAddressId) {
+                errorSpan.textContent = 'Please select or add an address.';
+                return;
+            }
+
+            if (!timeSlot) {
+                errorSpan.textContent = 'Please select a Delivery time.';
+                return;
+            }
+
+            // Prepare order data
+            const orderData = {
+                address: selectedAddressId,
+                timeSlot: timeSlot,
+                instructions: instructionDetails
+            };
+
+            try {
+                // Get the token from localStorage
+                const token = localStorage.getItem('token');
+
+                // Make the API call using axios
+                const response = await axios.post('/order/paynow', orderData, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                // Check if the response was successful
+                if (response.status === 201) {
+                    errorSpan.textContent = 'Order submitted successfully!';
+                    errorSpan.classList.replace('text-danger', 'text-success');
+                } else {
+                    errorSpan.textContent = 'Error submitting the order.';
+                    errorSpan.classList.replace('text-success', 'text-danger');
+                }
+            } catch (error) {
+                errorSpan.textContent = 'Error submitting the order.';
+                errorSpan.classList.replace('text-success', 'text-danger');
+                console.error('Error:', error);
             }
         });
 

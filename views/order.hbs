@@ -18,14 +18,15 @@
 <div class="container">
   <h1 class="text-center my-4">Payment Method</h1>
 
-  <!-- Cash on Delivery Option -->
+  {{!-- <!-- Cash on Delivery Option -->
   <div class="payment-method-container mb-4">
     <h4><strong>Payment Method:</strong> Cash on Delivery</h4>
     <p>You will pay in cash when the product is delivered to your address.</p>
-  </div>
+  </div> --}}
 
   {{> AlreadyDefinedAddress }}
   {{> addressAdd }}
+  {{> rozerPay}}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

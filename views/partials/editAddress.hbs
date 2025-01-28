@@ -1,82 +1,178 @@
-<!-- Button to open modal, this is just an example of how you trigger the function -->
-
 <script>
-    // Function to open the modal
+    // Function to open the modal dynamically and fetch data
     function openModal(addressId) {
         // Create the modal structure dynamically if not already present
         if (!document.getElementById('myModal')) {
-            // Modal HTML structure
+            // Modal HTML structure with form fields
             const modalHtml = `
-                <style>
-                    /* The Modal (background) */
-                    .modal {
-                        display: none;
-                        position: fixed;
-                        z-index: 1;
-                        left: 0;
-                        top: 0;
-                        width: 100%;
-                        height: 100%;
-                        overflow: auto;
-                        background-color: rgba(0, 0, 0, 0.4);
-                    }
+              <style>
+                .modal {
+                    display: none;
+                    position: fixed;
+                    z-index: 1;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    overflow: auto;
+                    background-color: rgba(0, 0, 0, 0.6);
+                    backdrop-filter: blur(5px);
+                }
 
-                    /* Modal Content */
-                    .modal-content {
-                        background-color: #fefefe;
-                        margin: 10% auto;
-                        padding: 20px;
-                        border: 1px solid #888;
-                        width: 80%;
-                        max-width: 500px;
-                    }
+                .modal-content {
+                    background-color: #fff;
+                    margin: 8% auto;
+                    padding: 30px;
+                    border: none;
+                    width: 90%;
+                    max-width: 500px;
+                    border-radius: 15px;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                }
 
-                    /* The Close Button */
-                    .close-btn {
-                        color: #aaa;
-                        float: right;
-                        font-size: 28px;
-                        font-weight: bold;
-                    }
+                .close-btn {
+                    color: #333;
+                    float: right;
+                    font-size: 30px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: color 0.3s ease;
+                }
 
-                    .close-btn:hover,
-                    .close-btn:focus {
-                        color: black;
-                        text-decoration: none;
-                        cursor: pointer;
-                    }
-                </style>
+                .close-btn:hover, .close-btn:focus {
+                    color: #ff3b3b;
+                    text-decoration: none;
+                }
 
-                <!-- Modal Structure -->
-                <div id="myModal" class="modal">
-                    <div class="modal-content">
-                        <span class="close-btn" id="closeModalBtn">&times;</span>
-                        <h3>Edit Address</h3>
-                        <p>Content for editing address goes here...</p>
-                    </div>
+                h3 {
+                    text-align: center;
+                    font-size: 24px;
+                    color: #333;
+                    font-weight: 600;
+                    margin-bottom: 20px;
+                }
+
+                input, select {
+                    width: 100%;
+                    padding: 12px;
+                    margin: 10px 0;
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    outline: none;
+                    transition: border-color 0.3s ease;
+                }
+
+                input:focus, select:focus {
+                    border-color: #28a745;
+                }
+
+                button {
+                    padding: 12px 20px;
+                    background: orange;
+                    color: #fff;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 18px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    width: 100%;
+                    transition: background 0.3s ease;
+                }
+
+            </style>
+            <div id="myModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn" id="closeModalBtn">&times;</span>
+                    <h3>Edit Address</h3>
+                    <form id="addressForm1">
+                        <input type="text" id="name1" placeholder="Name" required>
+                        <input type="email" id="email1" placeholder="Email" required>
+                        <input type="text" id="phone1" placeholder="Phone" required>
+                        <input type="text" id="line11" placeholder="Address Line 1" required>
+                        <input type="text" id="line21" placeholder="Address Line 2 (Optional)">
+                        <input type="text" id="city1" placeholder="City" required>
+                        <input type="text" id="state1" placeholder="State" required>
+                        <input type="text" id="zip1" placeholder="ZIP Code" required>
+                        <select id="addressType1" required>
+                            <option value="">Select Address Type</option>
+                            <option value="Home">Home</option>
+                            <option value="Office">Office</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <button type="submit" class="btn btn-warning">Save Address</button>
+                    </form>
                 </div>
-            `;
+            </div>`;
+
             // Append the modal HTML to the body
             document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
 
-        // Get the modal and close button
+        // Get modal elements
         const modal = document.getElementById('myModal');
         const closeModalBtn = document.getElementById('closeModalBtn');
+        const addressForm = document.getElementById('addressForm1');
 
         // Show the modal
         modal.style.display = 'block';
 
-        // Close modal when the close button is clicked
-        closeModalBtn.addEventListener('click', function () {
+       closeModalBtn.onclick = () => {
             modal.style.display = 'none';
-        });
+            setTimeout(() => {
+                window.location.reload();
+            }, 300); // Delay to ensure smooth closing before reload
+        };
 
-        // Close modal if user clicks outside of the modal content
-        window.addEventListener('click', function (event) {
+        window.onclick = (event) => {
             if (event.target === modal) {
                 modal.style.display = 'none';
+                window.location.reload();
             }
-        });
+        };
+
+        // Fetch address data from API
+        axios.get(`order/address/${addressId}`)
+            .then(response => {
+                const data = response.data;
+                document.getElementById('name1').value = data.name|| '';
+                document.getElementById('email1').value = data.email || '';
+                document.getElementById('phone1').value = data.phone || '';
+                document.getElementById('line11').value = data.line1 || '';
+                document.getElementById('line21').value = data.line2 || '';
+                document.getElementById('city1').value = data.city || '';
+                document.getElementById('state1').value = data.state || '';
+                document.getElementById('zip1').value = data.zip || '';
+                document.getElementById('addressType1').value = data.addressType || '';
+            })
+            .catch(error => {
+                console.error('Error fetching address:', error);
+            });
+
+        // Handle form submission
+        addressForm.onsubmit = function (event) {
+            event.preventDefault();
+            const updatedAddress = {
+                name: document.getElementById('name1').value,
+                email: document.getElementById('email1').value,
+                phone: document.getElementById('phone1').value,
+                line1: document.getElementById('line11').value,
+                line2: document.getElementById('line21').value,
+                city: document.getElementById('city1').value,
+                state: document.getElementById('state1').value,
+                zip: document.getElementById('zip1').value,
+                addressType: document.getElementById('addressType1').value
+            };
+
+            axios.put(`order/address/${addressId}`, updatedAddress)
+                .then(response => {
+                    modal.style.display = 'none';
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error updating address:', error);
+                    alert('Failed to update address.');
+                });
+        };
     }
 </script>

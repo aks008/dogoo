@@ -6,7 +6,7 @@ exports.authenticateUser = (req, res, next) => {
 
   // Check if the token is provided
   if (!token) {
-    return res.redirect(process.env.BASE_PATH);
+    // return res.redirect(process.env.BASE_PATH);
     return res.status(401).json({ message: 'Authorization token required' });
   }
 

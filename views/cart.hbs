@@ -123,10 +123,13 @@
         {{/each}}
         <!-- Buy Now Button -->
         {{!-- <span style="color: green;"> Delivery charge : ₹30</span> --}}
-        <div class="buy-now-container d-flex justify-content-center mt-4">
+        <div class="buy-now-container d-flex justify-content-left mt-2 ms-2">
+        Subtotal  &nbsp;<b>₹<span id="totalCartValue" class="text-center" style="">0</span></b>
+        </div>
+        <div class="buy-now-container d-flex justify-content-center mt-2">
             <button class="btn btn-warning p-2 m-2 w-100 w-md-25 buy-now-btn">
                 <div class="total-cart-value" id="redirectButton">
-                    <b>Pay</b> ₹<span id="totalCartValue">0</span> </a>
+                    <b>Proceed to Buy</b>  </a>
                 </div>
             </button>
         </div>

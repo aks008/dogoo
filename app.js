@@ -12,6 +12,7 @@ var cartRouter = require('./routes/cart');
 var orderRouter = require('./routes/orders');
 var adminRouter = require('./routes/admin');
 var paymentRouter = require('./routes/paymentTransactions');
+var rozerPayRouter = require('./routes/razorpayRoutes');
 
 const { authenticateUser } = require('./middleware/authentication'); // Assuming JWT middleware
 var app = express();
@@ -57,6 +58,7 @@ app.use('/cart', authenticateUser, cartRouter);
 app.use('/order', authenticateUser, orderRouter);
 app.use('/payment', authenticateUser, paymentRouter);
 app.use('/admin', adminRouter);
+app.use('/rozerPay',authenticateUser, rozerPayRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

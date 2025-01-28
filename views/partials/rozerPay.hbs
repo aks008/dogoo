@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Razorpay Payment</title>
+  <!-- Include Razorpay Script -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <!-- Include Axios Script -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <script>
+    // Handle the payment button click
+    function handlePayment() {
+      // Step 1: Call your server to create the Razorpay order using Axios
+      axios.post('/rozerPay/create-order', {
+        amount: 500, // Amount in INR
+        currency: 'INR',
+      })
+        .then(function (response) {
+          // Step 2: Use the order ID returned from the server
+          const razorpayOrderId = response.data.id;
+
+          // Step 3: Initialize Razorpay checkout with the order ID
+          const options = {
+            key: 'rzp_test_IPf7v8DYBqyDs3', // Your Razorpay key
+            amount: 50000, // Amount in paise (500 INR)
+            currency: 'INR',
+            order_id: razorpayOrderId, // Order ID from the server response
+            name: 'Dogo Buscuit', // Your company name
+            description: 'This is for your payment',
+            handler: function (response) {
+              // Handle the successful payment response
+              console.log('Payment Successful!', response);
+              // You may want to send payment details to the server for verification
+            },
+            prefill: {
+              name: 'Akash Rupareliya',
+              email: 'akashrupareliya321@gmail.com',
+              contact: '80007577444'
+            },
+            theme: {
+              color: '#fffff'
+            }
+          };
+
+          // Create a Razorpay instance and open the checkout
+          const rzp1 = new Razorpay(options);
+          rzp1.open();
+        })
+        .catch(function (error) {
+          console.error('Error creating order:', error);
+        });
+    }
+  </script>
+</body>
+
+</html>

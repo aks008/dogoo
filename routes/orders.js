@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const orderMail = require("../service/orderConfirm");
 const newOrderMailForAdmin = require("../service/newOrderMailForAdmin");
 const moment = require("moment");
+const { log } = require('handlebars/runtime');
 
 // Get all orders
 router.get('/', async (req, res) => {
@@ -48,6 +49,7 @@ router.get('/details', async (req, res) => {
 router.post('/paynow', async (req, res) => {
 	try {
 		const postData = req.body;
+		console.log(postData);
 		const items = await Cart.aggregate([
 			// Match the cart with the specific userId
 			{
@@ -100,7 +102,6 @@ router.post('/paynow', async (req, res) => {
 		postData["products"] = items;
 		postData["totalAmount"] = totalPrice;
 		postData["orderBy"] = req.user.id;
-		postData["paymentMethod"] = "Cash on Delivery";
 		// Create a new order
 		if (totalPrice) {
 			const newOrder = new Order(postData);
@@ -108,27 +109,19 @@ router.post('/paynow', async (req, res) => {
 			await Cart.deleteOne({
 				userId: req.user.id
 			});
-			const user = await User.findOne({ _id: req.user.id });
-
-			await User.updateOne({
-				_id: req.user.id
-			}, {
-				$push: {
-					address: postData.address
-				}
-			});
+			const orderAddressDetails = await Address.findOne({ _id: orderDetails.address });
 			const userDetails = await User.findOne({ _id: req.user.id });
 			const order = {
 				orderNumber: orderDetails.orderNumber,
-				customerName: orderDetails.customerName,
-				customerEmail: userDetails.email,
+				customerName: orderAddressDetails.name,
+				customerEmail: orderAddressDetails.email,
 				orderDate: orderDetails.orderDate,
 				totalAmount: orderDetails.totalAmount
 			}
 			order["customerEmail"] = userDetails.email;
 			order.date = moment(new Date()).format("DD-MM-YYYY");
-			orderMail(order);
-			newOrderMailForAdmin(order)
+			// orderMail(order);
+			// newOrderMailForAdmin(order);
 			return res.status(201).json({ message: 'Order placed successfully!', order: newOrder });
 		}
 		return res.status(201).json({ message: 'Order placed successfully!' });
@@ -316,9 +309,12 @@ router.get('/address/:id', async (req, res) => {
 
 router.put('/address/:id', async (req, res) => {
 	try {
-		await Address.findOne({ _id: req.params.id }, {
-			$set: req.body
-		});
+		console.log(req.body);
+
+		await Address.updateOne(
+			{ _id: req.params.id },  // filter condition
+			{ $set: req.body }       // update operation
+		);
 		return res.status(200).json("Updated successfully");
 	} catch (err) {
 		console.error(err);
