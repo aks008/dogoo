@@ -1,6 +1,7 @@
 <style>
   body {
-    background-color: #faf3e0; /* Light pet-friendly background */
+    background-color: #faf3e0;
+    /* Light pet-friendly background */
     font-family: Arial, sans-serif;
   }
 
@@ -20,6 +21,7 @@
     padding: 20px;
     border-bottom: 2px solid #044994;
   }
+
   .status-label {
     font-weight: bold;
     padding: 5px 10px;
@@ -28,19 +30,23 @@
   }
 
   .status-pending {
-    background-color: #f5a623; /* Warm amber for pending */
+    background-color: #f5a623;
+    /* Warm amber for pending */
   }
 
   .status-shipped {
-    background-color: #48c774; /* Soft green for shipped */
+    background-color: #48c774;
+    /* Soft green for shipped */
   }
 
   .status-delivered {
-    background-color: #3498db; /* Calm blue for delivered */
+    background-color: #3498db;
+    /* Calm blue for delivered */
   }
 
   .status-cancelled {
-    background-color: #e74c3c; /* Bold red for cancelled */
+    background-color: #e74c3c;
+    /* Bold red for cancelled */
   }
 
   .product-image {
@@ -70,25 +76,28 @@
   .order-summary {
     font-size: 1.2em;
     font-weight: bold;
-    color: #2d3436; /* Darker text for better readability */
+    color: #2d3436;
+    /* Darker text for better readability */
   }
 
   .order-summary span {
     font-size: 1.5em;
-    color: #f28d1a; /* Highlight total amount with the header color */
+    color: #f28d1a;
+    /* Highlight total amount with the header color */
   }
 
   h6 {
-    color: #2c3e50; /* Darker text for product names */
+    color: #2c3e50;
+    /* Darker text for product names */
   }
 
   p {
-    color: #7f8c8d; /* Soft grey for text */
+    color: #7f8c8d;
+    /* Soft grey for text */
   }
 </style>
 
 <body>
-
   <div class="container mt-5">
     <div class="row">
       <!-- Loop through each order -->
@@ -109,7 +118,7 @@
             <!-- Customer Information -->
             <div class="order-info mb-3">
               <p><strong>Date:</strong> {{orderDate}}</p>
-              <p><strong>Name:</strong> {{customerName}}</p>
+              <p><strong>Name:</strong> {{address}}</p>
               <p><strong>Phone:</strong>+91 {{customerPhone}}</p>
 
               <!-- Loop through the addresses array and display each address -->
@@ -139,7 +148,7 @@
 
             <!-- Order Summary -->
             <div class="order-summary d-flex justify-content-between">
-               <h5>Total Amount: ₹{{totalAmount}}</h5>
+              <h5>Total Amount: ₹{{totalAmount}}</h5>
             </div>
           </div>
         </div>

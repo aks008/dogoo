@@ -180,7 +180,6 @@
             try {
                 // Get the token from localStorage
                 const token = localStorage.getItem('token');
-
                 // Make the API call using axios
                 const response = await axios.post('/order/paynow', orderData, {
                     headers: {
@@ -188,11 +187,22 @@
                         'Authorization': `Bearer ${token}`
                     }
                 });
-
                 // Check if the response was successful
-                if (response.status === 201) {
-                    errorSpan.textContent = 'Order submitted successfully!';
-                    errorSpan.classList.replace('text-danger', 'text-success');
+                if(response.data.isEmpty){
+                    window.location.href = "/cart";  // Redirect to the dashboard page or desired route
+                }
+                if (response.status === 201 && response.data) {
+                    const data = {
+                        orderId  : response.data.newOrder._id,
+                        amount : response.data.newOrder.totalAmount
+                    }
+                    const payment = await axios.post('/payment', data, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    this.handlePayment(response.data, payment.data.payment._id);
                 } else {
                     errorSpan.textContent = 'Error submitting the order.';
                     errorSpan.classList.replace('text-success', 'text-danger');

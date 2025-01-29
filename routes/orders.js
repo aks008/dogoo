@@ -4,11 +4,13 @@ const Order = require('../model/orders');
 const User = require('../model/users');
 const Cart = require('../model/cart');
 const Address = require('../model/address');
+const Payment = require('../model/paymentTransaction');
 const mongoose = require('mongoose');
 const orderMail = require("../service/orderConfirm");
 const newOrderMailForAdmin = require("../service/newOrderMailForAdmin");
 const moment = require("moment");
 const { log } = require('handlebars/runtime');
+const ObjectId = mongoose.Types.ObjectId;
 
 // Get all orders
 router.get('/', async (req, res) => {
@@ -29,7 +31,37 @@ router.get('/', async (req, res) => {
 
 router.get('/details', async (req, res) => {
 	try {
-		const orders = await Order.find({ orderBy: req.user.id });
+		const orders = await Order.aggregate([
+			{
+				$match: { orderBy: new ObjectId(req.user.id) } // Filter orders by the logged-in user
+			},
+			{
+				$lookup: {
+					from: "addresses", // Name of the Address collection
+					localField: "address", // The field in Order referencing Address
+					foreignField: "_id", // The primary key in Address collection
+					as: "address" // Output array field with address data
+				}
+			},
+			{
+				$unwind: "$address" // Convert address array into a single object
+			},
+			{
+				$lookup: {
+					from: "payments", // Name of the Payment collection
+					localField: "_id", // The field in Order matching with Payment's orderId
+					foreignField: "orderId", // The field in Payment referencing Order _id
+					as: "paymentDetails" // Output field containing the payment data
+				}
+			},
+			{
+				$unwind: { path: "$paymentDetails", preserveNullAndEmptyArrays: true } // If no payment, don't remove the order
+			},
+			{
+				$sort: { _id: -1 } // Sort orders by _id in descending order
+			}
+		]);
+		// console.log(orders);
 		const user = await User.findOne({ _id: req.user.id });
 		return res.render("orderDetails", {
 			layout: 'dashboard',  // Use the dashboard layout
@@ -122,9 +154,12 @@ router.post('/paynow', async (req, res) => {
 			order.date = moment(new Date()).format("DD-MM-YYYY");
 			// orderMail(order);
 			// newOrderMailForAdmin(order);
-			return res.status(201).json({ message: 'Order placed successfully!', order: newOrder });
+			return res.status(201).json({ message: 'Order placed successfully!', newOrder, orderAddressDetails });
 		}
-		return res.status(201).json({ message: 'Order placed successfully!' });
+		return res.status(201).json({
+			message: "Order placed successfully!",
+			isEmpty: true
+		});
 	} catch (err) {
 		console.error(err);
 		return res.status(500).json({ message: 'Failed to place order', error: err.message });
@@ -143,14 +178,23 @@ router.get('/orders', async (req, res) => {
 });
 
 // Route for viewing order details by orderNumber
-router.get('/:orderNumber', async (req, res) => {
-	const { orderNumber } = req.params;
+router.get('/:id', async (req, res) => {
 	try {
 		// Aggregate query to fetch the order based on orderNumber, and populate the product details
 		const order = await Order.aggregate([
 			// Match the order by orderNumber
 			{
-				$match: { orderNumber: parseInt(orderNumber) }
+				$match: {
+					_id: new ObjectId(req.params.id)
+				}
+			},
+			{
+				$lookup: {
+					from: "address",  // Collection where product details are stored
+					localField: "address",  // Field in Order's products array
+					foreignField: "_id",  // _id in the products collection
+					as: "address"  // Alias for merged product details
+				}
 			},
 			// Unwind the products array from the order
 			{
@@ -180,13 +224,11 @@ router.get('/:orderNumber', async (req, res) => {
 					}
 				}
 			},
-			// Merge both products and productsDetails fields into one document
+			// Group by orderNumber and include all relevant fields, including address
 			{
 				$group: {
 					_id: "$orderNumber",  // Group by orderNumber
-					customerName: { $first: "$customerName" },
-					customerPhone: { $first: "$customerPhone" },
-					address: { $first: "$address" },
+					address: { $first: "$address" },  // Address field included
 					totalAmount: { $first: "$totalAmount" },
 					instructions: { $first: "$instructions" },
 					timeSlot: { $first: "$timeSlot" },
@@ -219,12 +261,12 @@ router.get('/:orderNumber', async (req, res) => {
 				}
 			}
 		]);
+		console.log(order);
 
 		// If no order is found, redirect to the index page
-		if (order.length === 0) {
-			return res.redirect('/'); // Redirect to the index page
-		}
-
+		// if (order.length === 0) {
+		// 	return res.redirect('/'); // Redirect to the index page
+		// }
 		// If order is found, render the order details page and pass the order data
 		return res.render("orderedDetails", {
 			layout: 'dashboard',  // Use the dashboard layout

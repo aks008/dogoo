@@ -7,7 +7,7 @@ const orderSchema = new mongoose.Schema({
     orderNumber: { type: Number, unique: true },
     address: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'address',
         required: true,
     },
     instructions: { type: String, default: '' }, // Additional delivery instructions
@@ -21,8 +21,8 @@ const orderSchema = new mongoose.Schema({
     }, // Order creation date
     status: { // Order status
         type: String,
-        enum: ['pending', 'confirmed', 'delivered', 'cancelled'],
-        default: 'pending'
+        enum: ['order-created', 'pending-payment', 'payment-confirmed', 'pending', 'dispatched', 'payment-faild', 'confirmed', 'delivered', 'cancelled', 'completed'],
+        default: 'order-created'
     },
     cancelReason: {
         type: String

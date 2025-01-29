@@ -14,47 +14,89 @@
 <body>
   <script>
     // Handle the payment button click
-    function handlePayment() {
-      // Step 1: Call your server to create the Razorpay order using Axios
-      axios.post('/rozerPay/create-order', {
-        amount: 500, // Amount in INR
+  function handlePayment(paymentDetails, paymentId) {
+    // Step 1: Call your server to create the Razorpay order using Axios
+    axios.post('/rozerPay/create-order', {
+        amount: paymentDetails?.newOrder?.totalAmount, // Amount in INR
         currency: 'INR',
-      })
-        .then(function (response) {
-          // Step 2: Use the order ID returned from the server
-          const razorpayOrderId = response.data.id;
+    })
+    .then(function (response) {
+        // Step 2: Use the order ID returned from the server
+        const razorpayOrderId = response.data.id;
 
-          // Step 3: Initialize Razorpay checkout with the order ID
-          const options = {
+        // Step 3: Initialize Razorpay checkout with the order ID
+        const options = {
             key: 'rzp_test_IPf7v8DYBqyDs3', // Your Razorpay key
-            amount: 50000, // Amount in paise (500 INR)
+            amount: paymentDetails.totalAmount, // Amount in paise
             currency: 'INR',
             order_id: razorpayOrderId, // Order ID from the server response
-            name: 'Dogo Buscuit', // Your company name
-            description: 'This is for your payment',
-            handler: function (response) {
-              // Handle the successful payment response
-              console.log('Payment Successful!', response);
-              // You may want to send payment details to the server for verification
-            },
-            prefill: {
-              name: 'Akash Rupareliya',
-              email: 'akashrupareliya321@gmail.com',
-              contact: '80007577444'
-            },
-            theme: {
-              color: '#fffff'
-            }
-          };
+            name: 'Dogo Biscuit', // Your company name
+            description: 'Payment for your order',
 
-          // Create a Razorpay instance and open the checkout
-          const rzp1 = new Razorpay(options);
-          rzp1.open();
-        })
-        .catch(function (error) {
-          console.error('Error creating order:', error);
-        });
-    }
+            // Success Handler
+            handler: function (response) {
+                console.log("Payment Successful!", response, paymentId);
+
+                // Step 4: Call backend API to update the payment status
+                axios.put(`/payment/${paymentId}`, {
+                    transaction: response,
+                    status: "success",
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(res => {
+                    window.location.href = "/";
+                })
+                .catch(error => {
+                    console.error("Error updating payment status:", error);
+                });
+            },
+
+            prefill: {
+                name: paymentDetails.orderAddressDetails.name,
+                email: paymentDetails.orderAddressDetails.email,
+                contact: paymentDetails.orderAddressDetails.phone
+            },
+
+            theme: {
+                color: '#fffff'
+            },
+
+            // Failure & Canceled Payment Handling
+            modal: {
+                "ondismiss": function () {
+                    console.log("Payment Canceled or Failed!");
+
+                    // Step 5: Call API to update payment status as failed
+                    axios.put(`/payment/${paymentId}`, {
+                        paymentStatus: "failed",
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                    .then(res => {
+                        console.log("Payment status updated as failed:", res.data);
+                    })
+                    .catch(error => {
+                        console.error("Error updating failed payment status:", error);
+                    });
+                }
+            }
+        };
+
+        // Create a Razorpay instance and open the checkout
+        const rzp1 = new Razorpay(options);
+        rzp1.open();
+    })
+    .catch(function (error) {
+        console.error("Error creating order:", error);
+    });
+  }
   </script>
 </body>
 
