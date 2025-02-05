@@ -182,62 +182,102 @@ router.get('/:id', async (req, res) => {
 	try {
 		// Aggregate query to fetch the order based on orderNumber, and populate the product details
 		const order = await Order.aggregate([
-			// Match the order by orderNumber
+			// Step 1: Match the order by _id or orderNumber
 			{
 				$match: {
-					_id: new ObjectId(req.params.id)
+					_id: new ObjectId(req.params.id) // Match by Order ID
 				}
 			},
 			{
 				$lookup: {
-					from: "address",  // Collection where product details are stored
-					localField: "address",  // Field in Order's products array
-					foreignField: "_id",  // _id in the products collection
-					as: "address"  // Alias for merged product details
+					from: "payments",  // Payment collection
+					localField: "_id",  // Field in Order (using _id as order reference)
+					foreignField: "orderId",  // orderId in Payment collection
+					as: "paymentDetails"  // Alias for merged payment details
 				}
 			},
-			// Unwind the products array from the order
+
+			// Step 9: If no payment found, set to empty array
 			{
-				$unwind: "$products"
+				$addFields: {
+					paymentDetails: { $ifNull: ["$paymentDetails", []] }
+				}
 			},
-			// Lookup the product details from the 'products' collection
+			// Step 2: Lookup to join the Address collection
 			{
 				$lookup: {
-					from: "products",  // Collection where product details are stored
-					localField: "products.productId",  // Field in Order's products array
-					foreignField: "_id",  // _id in the products collection
-					as: "productsDetails"  // Alias for merged product details
+					from: "addresses",  // Address collection name
+					localField: "address",  // Field in Order (ObjectId of address)
+					foreignField: "_id",  // _id field in Address collection
+					as: "addressDetails"  // Alias for the merged address details
 				}
 			},
-			// Unwind the productsDetails to flatten the resulting array
+
+			// Step 3: If no address found, set to empty array
+			{
+				$addFields: {
+					addressDetails: { $ifNull: ["$addressDetails", []] }
+				}
+			},
 			{
 				$unwind: {
-					path: "$productsDetails",  // Flatten the productsDetails array
+					path: "$addressDetails",  // Flatten the productsDetails array
 					preserveNullAndEmptyArrays: true  // Keep documents even if there are no matches
 				}
 			},
-			// Combine fields from both products and productsDetails where their _id fields match
+			{
+				$unwind: {
+					path: "$paymentDetails",  // Flatten the productsDetails array
+					preserveNullAndEmptyArrays: true  // Keep documents even if there are no matches
+				}
+			},
+			// Step 4: Unwind the products array in the order
+			{
+				$unwind: "$products"
+			},
+
+			// Step 5: Lookup product details from the products collection
+			{
+				$lookup: {
+					from: "products",  // Product collection
+					localField: "products.productId",  // Field in Order's products array
+					foreignField: "_id",  // _id in the Products collection
+					as: "productDetails"  // Alias for merged product details
+				}
+			},
+
+			// Step 6: Unwind the product details array
+			{
+				$unwind: {
+					path: "$productDetails",  // Flatten the productsDetails array
+					preserveNullAndEmptyArrays: true  // Keep documents even if there are no matches
+				}
+			},
+
+			// Step 7: Match products that are correctly linked to the order's products
 			{
 				$match: {
 					$expr: {
-						$eq: ["$products.productId", "$productsDetails._id"]
+						$eq: ["$products.productId", "$productDetails._id"]
 					}
 				}
 			},
-			// Group by orderNumber and include all relevant fields, including address
+
+			// Step 8: Group the results by orderNumber and aggregate relevant fields
 			{
 				$group: {
 					_id: "$orderNumber",  // Group by orderNumber
-					address: { $first: "$address" },  // Address field included
+					address: { $first: "$addressDetails" },  // Include the first matched address details
 					totalAmount: { $first: "$totalAmount" },
 					instructions: { $first: "$instructions" },
 					timeSlot: { $first: "$timeSlot" },
 					paymentMethod: { $first: "$paymentMethod" },
+					paymentDetails: { $first: "$paymentDetails" },
 					orderDate: {
 						$first: {
 							$dateToString: {
-								format: "%d-%m-%Y",  // dd-mm-yyyy format
-								date: "$orderDate"   // The field to format
+								format: "%d-%m-%Y",  // Format the order date as dd-mm-yyyy
+								date: "$orderDate"
 							}
 						}
 					},
@@ -248,21 +288,24 @@ router.get('/:id', async (req, res) => {
 							productId: "$products.productId",
 							quantity: "$products.quantity",
 							totalPrice: "$products.totalPrice",
-							name: "$productsDetails.name",
-							description: "$productsDetails.description",
-							price: "$productsDetails.price",
-							category: "$productsDetails.category",
-							stock: "$productsDetails.stock",
-							imageUrl: "$productsDetails.imageUrl",
-							discount: "$productsDetails.discount",
-							createdAt: "$productsDetails.createdAt"
+							name: "$productDetails.name",
+							description: "$productDetails.description",
+							price: "$productDetails.price",
+							category: "$productDetails.category",
+							stock: "$productDetails.stock",
+							imageUrl: "$productDetails.imageUrl",
+							discount: "$productDetails.discount",
+							createdAt: "$productDetails.createdAt"
 						}
 					}
 				}
 			}
 		]);
+
+
 		console.log(order);
 
+		const oadd = await Address.findOne({ _id: order[0].address });
 		// If no order is found, redirect to the index page
 		// if (order.length === 0) {
 		// 	return res.redirect('/'); // Redirect to the index page

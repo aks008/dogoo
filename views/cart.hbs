@@ -9,11 +9,20 @@
             border-radius: 5px;
         }
 
-        .cart-item {
+        .summary-container {
             display: flex;
-            align-items: center;
-            border-bottom: 1px solid #ddd;
-            padding: 10px 0;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 18px;
+        }
+
+        .summary-item {
+            display: flex;
+            padding-left: 2%;
+            justify-content: space-between;
+            width: 98%;
+            /* Adjust width as needed */
         }
 
         .cart-item img {
@@ -121,15 +130,27 @@
             </div>
         </div>
         {{/each}}
-        <!-- Buy Now Button -->
-        {{!-- <span style="color: green;"> Delivery charge : ₹30</span> --}}
-        <div class="buy-now-container d-flex justify-content-left mt-2 ms-2">
-        Subtotal  &nbsp;<b>₹<span id="totalCartValue" class="text-center" style="">0</span></b>
+
+        <div class="summary-container">
+            <div class="summary-item">
+                <span>Subtotal</span>
+                <b>₹<span id="totalCartValue">0</span></b>
+            </div>
+            <div class="summary-item">
+                <span>Shipping Fees <span class="small text-secondary" style="font-size:small !important;"> (Free
+                        Shipping up to ₹999)
+                    </span></span>
+                <b><span id="shippingFeesSign">₹</span><span id="shippingFees">49</span></b>
+            </div>
+            <div class="summary-item">
+                <span>Total</span>
+                <b><span id="totalSign">₹</span><span id="totalAmount">0</span></b> <!-- Display Total -->
+            </div>
         </div>
         <div class="buy-now-container d-flex justify-content-center mt-2">
             <button class="btn btn-warning p-2 m-2 w-100 w-md-25 buy-now-btn">
                 <div class="total-cart-value" id="redirectButton">
-                    <b>Proceed to Buy</b>  </a>
+                    <b>Proceed to Buy</b> </a>
                 </div>
             </button>
         </div>
@@ -180,6 +201,8 @@
                             cartItem.remove();
                         }
                         updateTotalCartValue();
+                        updateShippingFee();
+
                     });
                 });
 
@@ -190,6 +213,7 @@
                     // Remove the item from the cart container
                     deleteCartItem(productId);
                     updateTotalCartValue();
+                    updateShippingFee();
                     cartItem.remove();
                 });
             });
@@ -208,6 +232,7 @@
             })
                 .then(response => {
                     updateTotalCartValue();
+                    updateShippingFee();
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -225,6 +250,8 @@
             })
                 .then(response => {
                     updateTotalCartValue();
+                    updateShippingFee();
+                    window.location.reload();
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -255,11 +282,38 @@
             const totalCartValueElement = document.getElementById('totalCartValue');
             totalCartValueElement.textContent = totalCartValue;
         }
-        // Call this function to update the total cart value when the page loads or when cart items change
-        updateTotalCartValue();
-
         document.getElementById('redirectButton').addEventListener('click', function () {
             window.location.href = '/order';  // Redirects to the home page
         });
+        // Call this function to update the total cart value when the page loads or when cart items change
+        updateTotalCartValue();
+        function updateShippingFee() {
+            const subtotalElement = document.getElementById("totalCartValue");
+            const shippingFeeElement = document.getElementById("shippingFees");
+            const shippingFeesSign = document.getElementById("shippingFeesSign");
+            const totalAmountElement = document.getElementById("totalAmount");
+
+            const subtotal = parseInt(subtotalElement.innerText, 10); // Convert subtotal to number
+            const shippingAmount = parseInt(shippingFeeElement.innerText, 10); // Convert subtotal to number
+            let shippingFee = shippingAmount > 0 ? shippingAmount : 0; // Default shipping fee
+            if (subtotal > 1000) {
+                shippingFeeElement.innerText = "Free"; // Replace 49 with "Free"
+                shippingFeesSign.innerText = ""; // Replace 49 with "Free"
+                shippingFeeElement.style.color = "green"; // Set the text color to green
+            } else {
+                shippingFeesSign.innerText = "₹"; // Replace 49 with "Free"
+                shippingFeeElement.style.color = "black"; // Set the text color to green
+                shippingFeeElement.innerText = "49"; // Default value
+            }
+
+            const total = subtotal + shippingFee;
+            totalAmountElement.innerText = total; // Update the total amount
+            if (subtotal > 999) {
+                totalAmountElement.innerText = subtotal;
+            }
+
+        }
+        updateShippingFee();
+
     </script>
 </body>

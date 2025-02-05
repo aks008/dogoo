@@ -21,8 +21,8 @@ const orderSchema = new mongoose.Schema({
     }, // Order creation date
     status: { // Order status
         type: String,
-        enum: ['order-created', 'pending-payment', 'payment-confirmed', 'pending', 'dispatched', 'payment-faild', 'confirmed', 'delivered', 'cancelled', 'completed'],
-        default: 'order-created'
+        enum: ['Created', 'pending-payment', 'payment-confirmed', 'pending', 'dispatched', 'payment-faild', 'confirmed', 'delivered', 'cancelled', 'completed'],
+        default: 'Created'
     },
     cancelReason: {
         type: String

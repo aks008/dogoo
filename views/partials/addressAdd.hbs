@@ -188,13 +188,13 @@
                     }
                 });
                 // Check if the response was successful
-                if(response.data.isEmpty){
+                if (response.data.isEmpty) {
                     window.location.href = "/cart";  // Redirect to the dashboard page or desired route
                 }
                 if (response.status === 201 && response.data) {
                     const data = {
-                        orderId  : response.data.newOrder._id,
-                        amount : response.data.newOrder.totalAmount
+                        orderId: response.data.newOrder._id,
+                        amount: response.data.newOrder.totalAmount
                     }
                     const payment = await axios.post('/payment', data, {
                         headers: {
@@ -202,7 +202,7 @@
                             'Content-Type': 'application/json',
                         },
                     });
-                    this.handlePayment(response.data, payment.data.payment._id);
+                    this.handlePayment(response.data, payment.data.payment._id, response.data.newOrder._id);
                 } else {
                     errorSpan.textContent = 'Error submitting the order.';
                     errorSpan.classList.replace('text-success', 'text-danger');
