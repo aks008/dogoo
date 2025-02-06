@@ -4,56 +4,149 @@
   <title>Payment Transactions</title>
 
   <style>
-    .action-btn {
-      cursor: pointer;
-      color: red;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      min-height: 100vh;
     }
-    /* Table styling */
-    table {
-      width: 100%; /* Set table width to 100% */
-      border-collapse: collapse; /* Ensure borders collapse into a single border */
-    }
-    th, td {
+
+    /* Ensure the container starts below the navbar */
+    .container {
+      width: 90%;
+      margin: auto;
+      overflow-x: auto;
       padding: 10px;
-      text-align: left;
+      padding-top: 80px;
+      /* Adjust based on your navbar height */
     }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .container {
+      width: 90%;
+      margin: auto;
+      overflow-x: auto;
+      padding: 10px;
+    }
+
+    h3 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* Table Styling */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
     thead {
-      background-color: #f8f9fa; /* Light background for the header */
+      background-color: #343a40;
+      color: white;
     }
+
     tbody tr:nth-child(even) {
-      background-color: #f2f2f2; /* Alternating row colors for better readability */
+      background-color: #f2f2f2;
     }
+
     tbody tr:hover {
-      background-color: #e9ecef; /* Highlight row on hover */
+      background-color: #e9ecef;
+    }
+
+    /* Responsive Table */
+    @media screen and (max-width: 768px) {
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+
+    /* Mobile-Friendly: Stack Table */
+    @media screen and (max-width: 576px) {
+      table {
+        border: 0;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody,
+      tr,
+      td {
+        display: block;
+        width: 100%;
+      }
+
+      tr {
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        padding: 10px;
+      }
+
+      td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+      }
+
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        font-weight: bold;
+        text-align: left;
+      }
     }
   </style>
 </head>
 
-  <div class="container text-center pt-2">
-    <h3 class="mb-4">Payment Transactions</h3>
-    
-    <!-- Table for Payment Transactions -->
-    <table class="table table-bordered">
+<body>
+
+  <div class="container">
+    <h3>Payment Transactions</h3>
+
+    <table>
       <thead>
         <tr>
-          <th scope="col" class="text-center">Order ID</th>
-          <th scope="col" class="text-center">Amount</th>
-          <th scope="col" class="text-center">Payment Type</th>
-          <th scope="col" class="text-center">Payment Status</th>
+          <th scope="col">Order ID</th>
+          <th scope="col">Amount</th>
+          <th scope="col">Payment Type</th>
+          <th scope="col">Payment Status</th>
+          <th scope="col">Order Status</th>
         </tr>
       </thead>
       <tbody>
-        <!-- Loop through the transactions -->
-        {{#each transactions}}
-        {{transactions}}
-          <tr>
-            <td>{{orderId}}</td>
-            <td>₹{{amount}}</td>
-            <td>{{paymentType}}</td>
-            <td>{{paymentStatus}}</td>
-          </tr>
+
+        {{#each paymentDetails}}
+
+        <tr>
+          <td data-label="Order ID">{{orderDetails.orderNumber}}</td>
+          <td data-label="Amount">₹{{amount}}</td>
+          <td data-label="Payment Type">{{paymentType}}</td>
+          <td data-label="Payment Status">{{paymentStatus}}</td>
+          <td data-label="Order Status">{{orderDetails.status}}</td>
+        </tr>
         {{/each}}
       </tbody>
     </table>
+
   </div>
 
+</body>

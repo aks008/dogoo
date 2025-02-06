@@ -1,284 +1,258 @@
-<style>
-  .status-label {
-    font-weight: bold;
-    padding: 5px;
-    border-radius: 5px;
-  }
+{{!-- views/admin/orders.handlebars --}}
+<!DOCTYPE html>
+<html lang="en">
 
-  .status-pending {
-    background-color: orange;
-    color: white;
-  }
+<head>
+  <meta charset="UTF-8">
+  <title>{{title}}</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Ensure images scale well on small screens */
+    .order-img {
+      width: 50px;
+      height: auto;
+      margin-right: 10px;
+    }
 
-  .status-confirmed {
-    background-color: green;
-    color: white;
-  }
+    /* Wrap text properly on small screens */
+    @media (max-width: 576px) {
 
-  .status-delivered {
-    background-color: blue;
-    color: white;
-  }
+      .table th,
+      .table td {
+        display: block;
+        width: 100%;
+        text-align: left;
+      }
 
-  .status-cancelled {
-    background-color: red;
-    color: white;
-  }
-</style>
-<script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.min.js"></script>
+      .table tr {
+        margin-bottom: 10px;
+        border-bottom: 1px solid #ddd;
+        display: block;
+      }
+
+      .order-img {
+        width: 40px;
+      }
+    }
+
+    .status-label {
+      font-weight: bold;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    .status-pending {
+      background-color: orange;
+      color: white;
+    }
+
+    .status-confirmed {
+      background-color: green;
+      color: white;
+    }
+
+    .status-delivered {
+      background-color: blue;
+      color: white;
+    }
+
+    .status-cancelled {
+      background-color: red;
+      color: white;
+    }
+  </style>
+</head>
 
 <body>
-  <div class="container" style="padding-top: 20px;">
-    <div class="row">
-      <!-- Orders Table -->
-      <div class="col-12">
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Status</th>
-              <th>Customer Name</th>
-              <th>Phone</th>
-              <th>Date</th>
-              <th>Total Amount</th>
-              <th style="text-align: center;">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Loop through each order -->
-            {{#each orders}}
-            <tr>
-              <td>#{{orderNumber}}</td> <!-- Display Order ID -->
-              <td>
-                <span class="status-label status-{{status}}">{{status}}</span>
-                <!-- Dynamic Status with Styling -->
-              </td>
-              <td>{{customerName}}</td>
-              <td>{{customerPhone}}</td>
-              <td>
-                {{orderDate}}
-              </td>
-              <td><b>₹{{totalAmount}}</b></td>
-              <td>
-                <div class="d-flex gap-2">
-                  <button class="btn btn-dark" data-id="{{_id}}" onclick="viewOrderDetails(this)">
-                    View
-                  </button>
-                  <button class="btn btn-primary confirmed" data-status="{{status}}" data-ids="confirmed"
-                    onclick="changeStatus('confirmed', this)" data-id="{{_id}}">
-                    Confirmed
-                  </button>
-
-                  <button class="btn btn-warning delivered" data-status="{{status}}" data-ids="delivered"
-                    onclick="changeStatus('delivered', this)" data-id="{{_id}}">
-                    Delivered
-                  </button>
-
-
-                  {{#if (eq status "delivered") }}
-                  <!-- Pay Now Button -->
-                  <button type="button" data-status="delivered" class="btn btn-success"
-                    onclick="openPaymentModal('{{orderNumber}}', '{{totalAmount}}')">
-                    Pay Now
-                  </button>
-                  {{/if}}
-                </div>
-              </td>
-            </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      </div>
-    </div>
+  <div class="container-fluid" style="width:89%;padding-top:1%;margin-left:11%">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Order ID </th>
+          <th>Status</th>
+          <th>Customer Name</th>
+          <th>Order Date</th>
+          <th>Payment Status</th>
+          <th>Total Amount</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each orders}}
+        <tr>
+          <td>#{{orderNumber}}</td>
+          <td>
+            <span class="status-label status-{{status}}">
+              {{status}}
+            </span>
+          </td>
+          <td>{{addressDetails.name}}</td>
+          <td>{{orderDate}}</td>
+          <td>
+            <span class="status-label status-{{payments.paymentStatus}}">
+              {{payments.paymentStatus}}
+            </span>
+          </td>
+          <td>₹{{totalAmount}}</td>
+          <td class="text-center">
+            <button class="btn btn-dark btn-sm" data-id="{{_id}}" onclick="viewOrderDetails(this)">View</button>
+            <button class="btn btn-primary btn-sm" data-id="{{_id}}"
+              onclick="changeStatus('confirmed', this)">Confirm</button>
+            <button class="btn btn-warning btn-sm" data-id="{{_id}}"
+              onclick="changeStatus('delivered', this)">Delivered</button>
+            <button class="btn btn-success btn-sm" data-id="{{_id}}"
+              onclick="openPaymentModal('{{orderNumber}}','{{totalAmount}}')">Pay Now</button>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
   </div>
 
   <!-- Order Details Modal -->
   <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-dialog" style="max-width: 100%;">
+    <div class="modal-dialog modal-xl">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="orderDetailsModalLabel">Order Details</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" id="orderDetailsContent">
-          <!-- Order details will be loaded here -->
+          <!-- Order details will be loaded here via AJAX -->
+          <p>Loading...</p>
         </div>
-        <div class="modal-footer d-flex justify-content-center">
+        <div class="modal-footer justify-content-between">
+          <div>
+            <select id="newStatus" class="" style="width: auto; display: none;">
+            </select>
+          </div>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
   </div>
 
-
   <!-- Payment Modal -->
   <div id="paymentModal"
     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7);">
     <div
       style="background:#f2f2f2; padding:20px; width:400px; margin:100px auto; border-radius:8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-      <h3 style="color:#333; font-family: Arial, sans-serif;">Payment Details</h3>
-      <p style="color:#555; font-family: Arial, sans-serif;">Order ID: <span id="modalOrderId"
-          style="font-weight:bold;"></span></p>
-      <p style="color:#555; font-family: Arial, sans-serif;">Amount: <span id="modalAmount"
-          style="font-weight:bold;"></span></p>
-      <label for="paymentType" style="font-family: Arial, sans-serif; color:#333;">Payment Type:</label>
-      <select id="paymentType"
-        style="padding:5px; width:100%; margin-top:5px; border:1px solid #ccc; border-radius:5px;">
+      <h3 style="color:#333;">Payment Details</h3>
+      <p style="color:#555;">Order ID: <span id="modalOrderId" style="font-weight:bold;"></span></p>
+      <p style="color:#555;">Amount: <span id="modalAmount" style="font-weight:bold;"></span></p>
+      <label for="paymentType" style="color:#333;">Payment Type:</label>
+      <select id="paymentType" class="form-select" style="margin-top:5px;">
         <option value="Cash">Cash</option>
         <option value="UPI">UPI</option>
       </select>
-      <br /><br />
-      <button onclick="storePayment()"
-        style="background-color:#4CAF50; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer;">Submit
-        Payment</button>
-      <button onclick="closePaymentModal()"
-        style="background-color:#f44336; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; margin-left:10px;">Cancel</button>
+      <br />
+      <button class="btn btn-success" onclick="storePayment()">Submit Payment</button>
+      <button class="btn btn-danger" onclick="closePaymentModal()" style="margin-left:10px;">Cancel</button>
     </div>
   </div>
 
 
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
   <script>
-    /**
-    * Updates the order status via API.
-    * @param {string} status - The new status ('confirmed' or 'delivered').
-    * @param {HTMLElement} button - The button element that was clicked.
-    */
-    function changeStatus(status, button) {
-      // Retrieve the order ID from the data-id attribute
-      const orderId = button.getAttribute('data-id');
-      const url = `/admin/status/change/${orderId}`; // API endpoint
-      const data = { status }; // Payload
+    // Helper: Current order for status update
+    let currentOrder = null;
 
-      // Axios PUT request
-      axios.put(url, data)
-        .then(response => {
-          // Optionally update the UI dynamically
-          // Example: Disable the button or provide feedback
-          button.textContent = `${status.charAt(0).toUpperCase() + status.slice(1)} ✓`;
-          button.disabled = true;
-        })
-        .catch(error => {
-          // On error
-          const errorMessage = error.response
-            ? error.response.data.message
-            : error.message;
-          alert(`Failed to update status: ${errorMessage}`);
-          console.error(error);
-        });
+    // Convert a date string to locale date (you can also define a Handlebars helper on the server)
+    function formatDate(dateStr) {
+      return new Date(dateStr).toLocaleDateString();
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      // Hide buttons based on the 'data-status' and 'data-id'
-      hideButtonsByStatus();
-    });
-
-    function hideButtonsByStatus() {
-      // Select all buttons with the class 'btn'
-      const buttons = document.querySelectorAll('.btn');
-
-      // Loop through each button and check the 'data-status' and 'data-id'
-      buttons.forEach(button => {
-        const status = button.getAttribute('data-status');
-        const confirmed = document.getElementsByClassName('confirmed');
-        const delivered = document.getElementsByClassName('delivered');
-        const id = button.getAttribute('data-ids');
-        // If status is 'confirm' and id is 'confirm', hide the button
-        if (status === 'confirmed' && id === 'confirmed') {
-          button.style.display = 'none';
-        } else if (status === 'delivered' && id === 'delivered') {
-          button.style.display = 'none';
-          // Loop through the elements and hide each one
-          for (let i = 0; i < confirmed.length; i++) {
-            confirmed[i].style.display = 'none';
-          }
-        } else if (status === 'cancelled') {
-          for (let i = 0; i < confirmed.length; i++) {
-            confirmed[i].style.display = 'none';
-          }
-          for (let i = 0; i < delivered.length; i++) {
-            delivered[i].style.display = 'none';
-          }
-        }
-      });
-    }
-
+    // Called when "View" button is clicked; fetch and display order details in the modal
     async function viewOrderDetails(button) {
       const orderId = button.getAttribute('data-id');
-
-      // Show loading indicator
       const modalBody = document.getElementById('orderDetailsContent');
       modalBody.innerHTML = '<p>Loading...</p>';
-
       try {
-        // Fetch order details from the API
         const response = await axios.get(`/admin/order/${orderId}`);
-        const order = response.data[0];
-        console.log(response.data);
-        // Format and display order details in the modal
-        modalBody.innerHTML = `<table border="1" cellspacing="0" cellpadding="8" style="border-collapse: collapse; width: 100%;">
-  <tr>
-    <th>Order ID</th>
-    <td>${order._id}</td>
-  </tr>
-  <tr>
-    <th>Customer Name</th>
-    <td>${order.customerName}</td>
-  </tr>
-  <tr>
-    <th>Status</th>
-    <td>${order.status}</td>
-  </tr>
-  <tr>
-    <th>Address</th>
-    <td>
-      <ul>
-        ${order.address?.map(address => `
-          <li>
-            ${address.line1}, ${address.line2}, ${address.city}, ${address.state}, ${address.zip}, ${address.country}
-            (${address.addressType})
-          </li>
-        `).join('')}
-      </ul>
-    </td>
-  </tr>
-  <tr>
-    <th>Items</th>
-    <td>
-      <ul>
-        ${order.products?.map(product => `
-          <li>
-            <img src="${product.imageUrl}" alt="${product.name}" style="width: 50px; height: auto;"/>
-            ${product.name} (Qty: <b> ${product.quantity} </b>) : <b> ₹${product.totalPrice} </b>
-          </li>
-        `).join('')}
-      </ul>
-    </td>
-  </tr>
-  <tr>
-    <th>Total Amount</th>
-    <td>₹${order.totalAmount}</td>
-  </tr>
-  <tr>
-    <th>Order Date</th>
-    <td>${new Date(order.orderDate).toLocaleDateString()}</td>
-  </tr>
-  <tr>
-    <th>Time Slot</th>
-    <td>${order.timeSlot}</td>
-  </tr>
-  <tr>
-    <th>Payment Method</th>
-    <td>${order.paymentMethod}</td>
-  </tr>
-  <tr>
-    <th>Instructions</th>
-    <td>${order.instructions}</td>
-  </tr>
-</table>
-`;
-
+        currentOrder = response.data[0];  // Assuming API returns an array with one order
+        modalBody.innerHTML = `
+          <div class="table-responsive">
+  <table class="table table-striped">
+    <tr>
+      <th>Order Number</th>
+      <td>#${currentOrder.orderNumber}</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <td>
+        <span class="status-label status-${currentOrder.status.toLowerCase()}">
+          ${currentOrder.status}
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <th>Customer Details</th>
+      <td>
+        <span>
+          ${currentOrder.addressDetails.name} <br>
+          ${currentOrder.addressDetails.email} <br>
+          +91 ${currentOrder.addressDetails.phone}
+        </span>
+      </td>
+    </tr>
+    <tr>
+      <th>Address</th>
+      <td style="word-wrap: break-word;">
+        ${currentOrder.addressDetails
+            ? `
+            ${currentOrder.addressDetails.line1} &nbsp;
+            ${currentOrder.addressDetails.line2 ? currentOrder.addressDetails.line2 + '&nbsp;' : ''} 
+            ${currentOrder.addressDetails.city}, ${currentOrder.addressDetails.state} - ${currentOrder.addressDetails.zip} &nbsp;<br>`
+            : 'No address details available'
+          }
+      </td>
+    </tr>
+    <tr>
+      <th>Address Type</th>
+      <td><span>${currentOrder.addressDetails.addressType}</span></td>
+    </tr>
+    <tr>
+      <th>Time Slot</th>
+      <td><span>${currentOrder.timeSlot}</span></td>
+    </tr>
+    <tr>
+      <th>Items</th>
+      <td>
+        <ul class="list-unstyled">
+          ${Array.isArray(currentOrder.products)
+            ? currentOrder.products.map(product => `
+              <li class="d-flex align-items-center">
+                <img src="${product.imageUrl}" alt="${product.name}" class="order-img"/>
+                <span>${product.name} (Qty: <b>${product.quantity}</b>) : <b>₹${product.totalPrice}</b></span>
+              </li>
+            `).join('')
+            : `<li class="d-flex align-items-center">
+                <img src="${currentOrder.products.imageUrl}" alt="${currentOrder.products.name}" class="order-img"/>
+                <span>${currentOrder.products.name} (Qty: <b>${currentOrder.products.quantity}</b>) : <b>₹${currentOrder.products.totalPrice}</b></span>
+              </li>`
+          }
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Total Amount</th>
+      <td><b>₹${currentOrder.totalAmount}</b></td>
+    </tr>
+    <tr>
+      <th>Order Date</th>
+      <td>${formatDate(currentOrder.orderDate)}</td>
+    </tr>
+    <tr>
+      <th>Instructions</th>
+      <td>${currentOrder.instructions || 'None'}</td>
+    </tr>
+  </table>
+</div>
+        `;
+        // Set current status as default in dropdown
+        document.getElementById('newStatus').value = currentOrder.status;
         // Open the modal
         const orderModal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
         orderModal.show();
@@ -286,27 +260,60 @@
         console.error('Error fetching order details:', error);
         modalBody.innerHTML = '<p class="text-danger">Failed to load order details. Please try again later.</p>';
       }
-
     }
 
-    function openPaymentModal(orderId, amount) {
-      document.getElementById('modalOrderId').innerText = orderId;
+    // Update order status
+    async function changeStatus(newStatus, button) {
+      const orderId = button.getAttribute('data-id');
+      try {
+        await axios.put(`/admin/status/change/${orderId}`, { status: newStatus });
+        alert(`Order status updated to ${newStatus}`);
+        // Optionally, refresh page or update the UI
+        window.location.reload();
+      } catch (error) {
+        console.error('Failed to update status:', error);
+        alert('Failed to update status. Please try again.');
+      }
+    }
+
+    // Called when Update Status button is clicked in modal
+    async function updateOrderStatus() {
+      if (!currentOrder) return;
+      const newStatus = document.getElementById('newStatus').value;
+      try {
+        await axios.put(`/admin/status/change/${currentOrder._id}`, { status: newStatus });
+        window.location.reload();
+      } catch (error) {
+        console.error('Failed to update status:', error);
+        alert('Failed to update status. Please try again.');
+      }
+    }
+
+    document.getElementById('updateStatusBtn').addEventListener('click', updateOrderStatus);
+
+    // Payment Modal functions
+    function openPaymentModal(orderNumber, amount) {
+      document.getElementById('modalOrderId').innerText = orderNumber;
       document.getElementById('modalAmount').innerText = amount;
       document.getElementById('paymentModal').style.display = 'block';
     }
-
     function closePaymentModal() {
       document.getElementById('paymentModal').style.display = 'none';
     }
-
-    function storePayment() {
+    async function storePayment() {
       const orderId = document.getElementById('modalOrderId').innerText;
       const amount = document.getElementById('modalAmount').innerText;
       const paymentType = document.getElementById('paymentType').value;
-
-      console.log('Storing Payment:', { orderId, amount, paymentType });
-      alert('Payment stored successfully!');
-      closePaymentModal();
+      try {
+        await axios.post('/admin/payment', { orderId, amount, paymentType });
+        closePaymentModal();
+        window.location.reload();
+      } catch (error) {
+        console.error('Payment error:', error);
+        alert('Failed to store payment. Please try again.');
+      }
     }
-
   </script>
+</body>
+
+</html>

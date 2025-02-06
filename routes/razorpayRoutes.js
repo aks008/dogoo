@@ -31,7 +31,7 @@ router.post('/create-order', async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Error creating order' });
   }
-});
+  });
 
 // POST endpoint to verify the payment
 router.post('/verify-payment', (req, res) => {

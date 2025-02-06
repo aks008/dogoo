@@ -35,7 +35,7 @@
 
                         // Success Handler
                         handler: function (response) {
-                            console.log("Payment Successful!", response, paymentId);
+                            // Step 4: Call backend API to update the payment status
 
                             // Step 4: Call backend API to update the payment status
                             axios.put(`/payment/${paymentId}`, {
@@ -53,6 +53,7 @@
                                 .catch(error => {
                                     console.error("Error updating payment status:", error);
                                 });
+
                         },
 
                         prefill: {

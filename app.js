@@ -58,7 +58,7 @@ app.use('/cart', authenticateUser, cartRouter);
 app.use('/order', authenticateUser, orderRouter);
 app.use('/payment', authenticateUser, paymentRouter);
 app.use('/admin', adminRouter);
-app.use('/rozerPay',authenticateUser, rozerPayRouter);
+app.use('/rozerPay', authenticateUser, rozerPayRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

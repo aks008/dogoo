@@ -120,10 +120,71 @@ router.get('/users', async (req, res) => {
 
 router.get('/orders/:status', async (req, res) => {
 	try {
-		const orders = await Orders.find({ status: req.params.status }).sort({ _id: - 1 });
+		const orderWithDetails = await Orders.aggregate([
+			{
+				$match: {
+					"status": req.params.status
+				}
+			},
+			// 1. Sort orders in descending order (most recent first)
+			{ $sort: { _id: -1 } },
+
+			// 2. If the "address" field is stored as an array, unwind it.
+			{
+				$unwind: {
+					path: "$address",
+					preserveNullAndEmptyArrays: true
+				}
+			},
+
+			// 3. Lookup the payment details from the Payment collection
+			{
+				$lookup: {
+					from: "payments",        // Collection name for Payment model (usually lower case plural)
+					localField: "_id",       // Field in Orders
+					foreignField: "orderId", // Field in Payment documents referencing the order's _id
+					as: "payments"
+				}
+			},
+
+			// 4. Unwind the payments array (if an order may have only one payment)
+			{
+				$unwind: {
+					path: "$payments",
+					preserveNullAndEmptyArrays: true // In case no payment exists for an order
+				}
+			},
+
+			// 5. (Optional) If payments contain an array of transactions that you want to unwind:
+			{
+				$unwind: {
+					path: "$payments.transaction",
+					preserveNullAndEmptyArrays: true // In case no transaction exists
+				}
+			},
+
+			// 6. Lookup the address details from the Addresses collection using the unwound address field
+			{
+				$lookup: {
+					from: "addresses",       // Collection name for Addresses
+					localField: "address",   // Now this is a single ObjectId from the unwound array
+					foreignField: "_id",     // Field in Addresses collection
+					as: "addressDetails"
+				}
+			},
+
+			// 7. Unwind the addressDetails array
+			{
+				$unwind: {
+					path: "$addressDetails",
+					preserveNullAndEmptyArrays: true // In case no address exists
+				}
+			}
+		]);
+
 		return res.render("admin/orders", {
 			layout: 'admin',  // Use the dashboard layout
-			orders: orders,  // Pass user data to the view
+			orders: orderWithDetails,  // Pass user data to the view
 			title: 'Dashboard',  // Title for the page,
 		});
 	} catch (error) {
@@ -149,7 +210,6 @@ router.get('/products', async (req, res) => {
 router.delete('/products/:id', async (req, res) => {
 	try {
 		const data = await Products.deleteOne({ _id: req.params.id });
-		console.log(data);
 		return res.status(200).json({ data: "Product Deleted successfully" });
 	} catch (err) {
 		console.error(err);
@@ -180,11 +240,10 @@ router.put('/status/change/:id', async (req, res) => {
 				totalAmount: orderDetails.totalAmount
 			}
 			delieverdMail(order);
-		} else if (req.body.status === "confirmed") 
-			{
+		} else if (req.body.status === "confirmed") {
 			await PaymentTransaction.create({
 				orderId: orderDetails._id,
-				amount : orderDetails.totalAmount
+				amount: orderDetails.totalAmount
 			})
 		}
 		return res.status(200).json(order);
@@ -200,31 +259,47 @@ router.get('/order/:orderNumber', async (req, res) => {
 	try {
 		// Aggregate query to fetch the order based on orderNumber, and populate the product details
 		const order = await Orders.aggregate([
-			// Match the order by orderNumber
+			// 1. Match the order by _id (using orderNumber as an ObjectId)
 			{
 				$match: { _id: new ObjectId(orderNumber) }
 			},
-			// Unwind the products array from the order
+			// 2. Lookup the address details from the Addresses collection
+			{
+				$lookup: {
+					from: "addresses",       // Collection where addresses are stored
+					localField: "address",   // Field in Orders containing the address ObjectId
+					foreignField: "_id",     // Field in Addresses collection
+					as: "addressDetails"
+				}
+			},
+			// 3. Unwind the addressDetails array (if only one address is expected)
+			{
+				$unwind: {
+					path: "$addressDetails",
+					preserveNullAndEmptyArrays: true
+				}
+			},
+			// 5. Unwind the products array from the order
 			{
 				$unwind: "$products"
 			},
-			// Lookup the product details from the 'products' collection
+			// 6. Lookup the product details from the 'products' collection
 			{
 				$lookup: {
-					from: "products",  // Collection where product details are stored
-					localField: "products.productId",  // Field in Order's products array
-					foreignField: "_id",  // _id in the products collection
-					as: "productsDetails"  // Alias for merged product details
+					from: "products",                // Collection where product details are stored
+					localField: "products.productId",// Field in Order's products array
+					foreignField: "_id",             // _id in the products collection
+					as: "productsDetails"            // Alias for merged product details
 				}
 			},
-			// Unwind the productsDetails to flatten the resulting array
+			// 7. Unwind the productsDetails array to flatten the resulting array
 			{
 				$unwind: {
-					path: "$productsDetails",  // Flatten the productsDetails array
-					preserveNullAndEmptyArrays: true  // Keep documents even if there are no matches
+					path: "$productsDetails",
+					preserveNullAndEmptyArrays: true
 				}
 			},
-			// Combine fields from both products and productsDetails where their _id fields match
+			// 8. Match to ensure the product lookup is valid (productId equals productsDetails._id)
 			{
 				$match: {
 					$expr: {
@@ -232,13 +307,15 @@ router.get('/order/:orderNumber', async (req, res) => {
 					}
 				}
 			},
-			// Merge both products and productsDetails fields into one document
+			// 9. Group back to a single order document (grouped by orderNumber) and aggregate products
 			{
 				$group: {
 					_id: "$orderNumber",  // Group by orderNumber
 					customerName: { $first: "$customerName" },
 					customerPhone: { $first: "$customerPhone" },
 					address: { $first: "$address" },
+					addressDetails: { $first: "$addressDetails" },
+					payments: { $first: "$payments" },
 					totalAmount: { $first: "$totalAmount" },
 					instructions: { $first: "$instructions" },
 					timeSlot: { $first: "$timeSlot" },
@@ -246,8 +323,8 @@ router.get('/order/:orderNumber', async (req, res) => {
 					orderDate: {
 						$first: {
 							$dateToString: {
-								format: "%d-%m-%Y",  // dd-mm-yyyy format
-								date: "$orderDate"   // The field to format
+								format: "%d-%m-%Y",  // Format as dd-mm-yyyy
+								date: "$orderDate"
 							}
 						}
 					},
@@ -282,45 +359,48 @@ router.get('/order/:orderNumber', async (req, res) => {
 
 // Route to get all payment transaction details with order lookup
 router.get('/payments', async (req, res) => {
-  try {
-    // Lookup the payment details by orderId using $lookup
-	 const { Types } = require('mongoose');
+	try {
+		// Lookup the payment details by orderId using $lookup
+		const { Types } = require('mongoose');
 
-	  const paymentDetails = await PaymentTransaction.aggregate([{
-			  $lookup: {
-				  from: "orders",
-				  localField: "orderIdObject",  // Use the converted ObjectId
-				  foreignField: "_id",
-				  as: "orderDetails"
-			  }
-		  }
-	  ]);
-	  console.log(paymentDetails)
-	return res.render("admin/payments", {
+		const paymentDetails = await PaymentTransaction.aggregate([
+			{
+				$lookup: {
+					from: "orders",
+					localField: "orderId",
+					foreignField: "_id",
+					as: "orderDetails"
+				}
+			},
+			{
+				$unwind: "$orderDetails" // Unwind orderDetails to flatten the array
+			}
+		]);
+		return res.render("admin/payments", {
 			layout: 'admin',  // Use the dashboard layout
-			products: paymentDetails,  // Pass user data to the view
+			paymentDetails: paymentDetails,  // Pass user data to the view
 			title: 'Dashboard',  // Title for the page,
-	});
-  } catch (error) {
-    res.status(500).json({ message: 'Error retrieving payment transactions', error });
-  }
+		});
+	} catch (error) {
+		res.status(500).json({ message: 'Error retrieving payment transactions', error });
+	}
 });
 
 // Route to save payment details
 router.put('/payment-transaction/:id', async (req, res) => {
-  try {
-	await PaymentTransaction.updateOne({
-		  _id: req.params.id
-	}, {
-		  $set: {
-			paymentStatus: 'Completed',
-			paymentType: req.body.paymentType
-		}
-	});
-    return res.status(200).json({ message: 'Payment updated successfully', payment });
-  } catch (error) {
-    res.status(500).json({ message: 'Error udpate payment status', error });
-  }
+	try {
+		await PaymentTransaction.updateOne({
+			_id: req.params.id
+		}, {
+			$set: {
+				paymentStatus: 'Completed',
+				paymentType: req.body.paymentType
+			}
+		});
+		return res.status(200).json({ message: 'Payment updated successfully', payment });
+	} catch (error) {
+		res.status(500).json({ message: 'Error udpate payment status', error });
+	}
 });
 
 // Login route

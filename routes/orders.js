@@ -152,8 +152,8 @@ router.post('/paynow', async (req, res) => {
 			}
 			order["customerEmail"] = userDetails.email;
 			order.date = moment(new Date()).format("DD-MM-YYYY");
-			// orderMail(order);
-			// newOrderMailForAdmin(order);
+			orderMail(order);
+			newOrderMailForAdmin(order);
 			return res.status(201).json({ message: 'Order placed successfully!', newOrder, orderAddressDetails });
 		}
 		return res.status(201).json({
@@ -301,9 +301,6 @@ router.get('/:id', async (req, res) => {
 				}
 			}
 		]);
-
-
-		console.log(order);
 
 		const oadd = await Address.findOne({ _id: order[0].address });
 		// If no order is found, redirect to the index page
