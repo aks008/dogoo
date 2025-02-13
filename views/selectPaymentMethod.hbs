@@ -1,0 +1,203 @@
+<title>Select Payment Method</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: #f4f4f4;
+        padding: 10px;
+    }
+
+    .payment-container {
+        width: 100%;
+        max-width: 400px;
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: left;
+    }
+
+    h3 {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .card-option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 2px solid transparent;
+        padding: 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-bottom: 8px;
+        width: 100%;
+    }
+
+    .card-option.selected {
+        border-color: #005eff;
+        background: #f0f5ff;
+    }
+
+    .card-info {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+    }
+
+    .card-logo {
+        width: 35px;
+        height: auto;
+        margin-right: 10px;
+    }
+
+    .card-details {
+        font-size: 14px;
+    }
+
+    .security-msg {
+        background: #eafaea;
+        color: #267e26;
+        padding: 10px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        border-radius: 8px;
+        margin-top: 10px;
+    }
+
+    .security-msg img {
+        width: 16px;
+        height: 16px;
+        margin-right: 6px;
+    }
+
+    .continue-btn {
+        background: #005eff;
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        padding: 12px;
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        margin-top: 15px;
+        display: block;
+        text-decoration: none;
+        width: 100%;
+        transition: background 0.3s;
+    }
+
+    .continue-btn:hover {
+        background: #0048cc;
+    }
+</style>
+{{> rozerPay}}
+
+<body>
+    <div class="payment-container">
+        <h3>Choose Payment Method</h3>
+        <label class="card-option selected" onclick="selectPayment(this)">
+            <div class="card-info">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="card-logo"
+                    alt="Mastercard">
+                <div class="card-details">
+                    <strong>Online Transaction</strong>
+                </div>
+            </div>
+            <input type="radio" data-addressPhone={{paymentDetails.addressDetails.phone}}
+                data-addressName={{paymentDetails.addressDetails.name}}
+                data-addressEmail={{paymentDetails.addressDetails.email}} data-orderId={{paymentDetails.orderId}}
+                data-amount={{paymentDetails.amount}} data-paymentId={{paymentDetails._id}} name="payment"
+                value="Online" checked>
+        </label>
+
+        <label class="card-option" onclick="selectPayment(this)">
+            <div class="card-info">
+                <img src="/image/cod.png" class="card-logo" alt="COD">
+                <div class="card-details">
+                    <strong>Pay on Delivery</strong>
+                </div>
+            </div>
+            <input type="radio" name="payment" data-addressPhone={{paymentDetails.addressDetails.phone}}
+                data-addressName={{paymentDetails.addressDetails.name}}
+                data-addressEmail={{paymentDetails.addressDetails.email}} data-orderId={{paymentDetails.orderId}}
+                data-amount={{paymentDetails.amount}} data-paymentId={{paymentDetails._id}} value="COD">
+        </label>
+
+        <div class="security-msg">
+            <img src="https://cdn-icons-png.flaticon.com/512/846/846551.png" alt="Security">
+            We adhere entirely to the data security standards of the payment card industry.
+        </div>
+
+        <a href="#" class="continue-btn" onclick="checkPayment()">Continue</a>
+    </div>
+
+    <script>
+        function selectPayment(selectedOption) {
+            document.querySelectorAll('.card-option').forEach(option => {
+                option.classList.remove('selected');
+                option.querySelector("input").checked = false;
+            });
+
+            selectedOption.classList.add('selected');
+            selectedOption.querySelector("input").checked = true;
+        }
+
+        function checkPayment() {
+            let selectedPayment = document.querySelector("input[name='payment']:checked");
+
+            if (selectedPayment) {
+                let paymentType = selectedPayment.value;
+                const paymentDetails = {
+                    orderId: selectedPayment.dataset.orderid,
+                    amount: selectedPayment.dataset.amount,
+                    paymentId: selectedPayment.dataset.paymentid,
+                    name: selectedPayment.dataset.addressname,
+                    phone: selectedPayment.dataset.addressphone,
+                    email: selectedPayment.dataset.addressemail
+                }
+
+                if (paymentType === "Online") {
+                    this.handlePayment(paymentDetails, paymentDetails.paymentId, paymentDetails.orderId);
+                } else {
+                    axios.put(`/payment/${paymentId}`, {
+                        transaction: response,
+                        paymentType: "Online",
+                        paymentStatus: "success"
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                        .then(res => {
+                            window.location.href = `/order/${orderId}`;
+                        })
+                        .catch(error => {
+                            console.error("Error updating payment status:", error);
+                        });
+
+                }
+            } else {
+                alert("Please select a payment method.");
+            }
+        }
+    </script>
+
+
+</body>
+
+</html>

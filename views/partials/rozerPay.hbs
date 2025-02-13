@@ -17,7 +17,7 @@
         function handlePayment(paymentDetails, paymentId, orderId) {
             // Step 1: Call your server to create the Razorpay order using Axios
             axios.post('/rozerPay/create-order', {
-                amount: paymentDetails?.newOrder?.totalAmount, // Amount in INR
+                amount: paymentDetails?.amount, // Amount in INR
                 currency: 'INR',
             })
                 .then(function (response) {
@@ -27,7 +27,7 @@
                     // Step 3: Initialize Razorpay checkout with the order ID
                     const options = {
                         key: 'rzp_test_IPf7v8DYBqyDs3', // Your Razorpay key
-                        amount: paymentDetails.totalAmount, // Amount in paise
+                        amount: paymentDetails?.amount, // Amount in paise
                         currency: 'INR',
                         order_id: razorpayOrderId, // Order ID from the server response
                         name: 'Dogo Biscuit', // Your company name
@@ -40,7 +40,8 @@
                             // Step 4: Call backend API to update the payment status
                             axios.put(`/payment/${paymentId}`, {
                                 transaction: response,
-                                paymentStatus: "success",
+                                paymentType: "Online",
+                                paymentStatus: "success"
                             }, {
                                 headers: {
                                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -57,9 +58,9 @@
                         },
 
                         prefill: {
-                            name: paymentDetails.orderAddressDetails.name,
-                            email: paymentDetails.orderAddressDetails.email,
-                            contact: paymentDetails.orderAddressDetails.phone
+                            name: paymentDetails.name,
+                            email: paymentDetails.email,
+                            contact: paymentDetails.phone
                         },
 
                         theme: {

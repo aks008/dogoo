@@ -62,7 +62,7 @@
                             <button class="btn btn-outline-secondary decrease-btn"
                                 data-product-id="{{this._id}}">-</button>
                             <input type="number" class="form-control w-50 mx-2 quantity-input"
-                                id="quantity-{{this._id}}" value="0" min="0" max="99">
+                                id="quantity-{{this._id}}" value="1" min="0" max="99">
                             <button class="btn btn-outline-secondary increase-btn"
                                 data-product-id="{{this._id}}">+</button>
                         </div>
@@ -83,6 +83,17 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        let clickCount = 0; // Track the number of clicks
+        const viewCartButton = document.getElementById("view-cart-button");
+
+        // Function to hide the button after the second click
+        function handleButtonClick() {
+            clickCount++;
+            if (clickCount >= 2) {
+                viewCartButton.style.display = "none";
+            }
+        }
+
         // Handle increase and decrease button clicks
         const decreaseButtons = document.querySelectorAll('.decrease-btn');
         const increaseButtons = document.querySelectorAll('.increase-btn');
@@ -93,7 +104,6 @@
                 const quantityInput = document.getElementById('quantity-' + productId);
                 let currentQuantity = parseInt(quantityInput.value);
 
-                // Decrease quantity by 1, but prevent negative values
                 if (currentQuantity > 0) {
                     quantityInput.value = currentQuantity - 1;
                 }
@@ -109,14 +119,17 @@
             });
         });
 
+        // Handle Add to Cart button clicks
         const addToCartButtons = document.querySelectorAll('button[id^="addToCart-"]');
 
         addToCartButtons.forEach(button => {
             button.addEventListener('click', function () {
-                const productId = this.id.split('-')[1]; // Extract product ID
-                const productCard = document.querySelector(`#product-${productId}`); // Get the product card
-                const productImage = productCard.querySelector('.card-img-top'); // Get product image
-                const quantityInput = document.getElementById(`quantity-${productId}`); // Get quantity input
+
+                handleButtonClick(); // Call function to track clicks
+                const productId = this.id.split('-')[1];
+                const productCard = document.querySelector(`#product-${productId}`);
+                const productImage = productCard.querySelector('.card-img-top');
+                const quantityInput = document.getElementById(`quantity-${productId}`);
                 const quantity = parseInt(quantityInput.value);
 
                 if (quantity <= 0) {
@@ -124,11 +137,8 @@
                     return;
                 }
 
-                // Create a clone of the product image for animation
                 const productImageClone = productImage.cloneNode(true);
-
-                // Set initial position of the cloned image
-                document.body.appendChild(productImageClone); // Append clone to body
+                document.body.appendChild(productImageClone);
                 const productImageRect = productImage.getBoundingClientRect();
                 productImageClone.style.position = 'absolute';
                 productImageClone.style.top = `${productImageRect.top + window.scrollY}px`;
@@ -139,67 +149,54 @@
                 // Add flying class to start the animation
                 productImageClone.classList.add('flying');
 
-                // Handle adding to the cart logic here (e.g., sending the request to your server)
-                axios.post(`/cart/add`, {
-                    productId: productId,
-                    quantity: quantity,
-                })
+                axios.post(`/cart/add`, { productId, quantity })
                     .then(response => {
-                        // Show success message
                         axios.get(`/cart/count`, {
                             headers: {
                                 'Authorization': `Bearer ${localStorage.getItem('token')}`
                             }
-                        })
-                            .then(response => {
-                                const cartCount = document.getElementById('cartNumber');
-                                if (response.data.items > 0) {
-                                    cartCount.innerHTML = response.data.items;
-                                    cartCount.style.backgroundColor = 'orange';
-                                    cartCount.style.border = 'none';
+                        }).then(response => {
+                            const cartCount = document.getElementById('cartNumber');
+                            if (response.data.items > 0) {
+                                cartCount.innerHTML = response.data.items;
+                                cartCount.style.backgroundColor = 'orange';
+                                viewCartButton.style.display = "block";
+                            } else {
+                                cartCount.innerHTML = '';
+                                cartCount.style.backgroundColor = '#212529';
+                                viewCartButton.style.display = "none";
+                            }
+                            quantityInput.value = 1;
+                            showMessage(response.data.message, 'success');
+                            productImageClone.remove();
+                        }).catch(error => console.error('Error fetching cart data:', error));
 
-                                } else {
-                                    cartCount.innerHTML = '';  // Clear the cart count
-                                    cartCount.style.backgroundColor = '#212529';
-                                    cartCount.style.border = 'none';
-
-                                }
-                                quantityInput.value = 0; // Reset quantity input
-                                showMessage(response.data.message, 'success');
-                                productImageClone.remove(); // Remove the cloned image after the animation
-                            })
-                            .catch(error => {
-                                console.error('Error fetching cart data:', error);
-                            });
-                        quantityInput.value = 0; // Reset quantity input
+                        quantityInput.value = 1;
                         showMessage(response.data.message, 'success');
-                        productImageClone.remove(); // Remove the cloned image after the animation
+                        productImageClone.remove();
                     })
                     .catch(error => {
                         console.error('Error adding product to cart:', error);
                         showMessage('Failed to add product to cart.', 'danger');
-                        productImageClone.remove(); // Remove the cloned image if error occurs
+                        productImageClone.remove();
                     });
             });
         });
 
-        // Function to show success or error messages
+
         function showMessage(message, type) {
             const messageContainer = document.getElementById('messageContainer');
             const messageContent = document.getElementById('messageContent');
 
-            // Set message and style based on type
             messageContent.textContent = message;
             messageContainer.style.display = 'block';
 
-            // Update the style for success or error
             if (type === 'success') {
-                messageContainer.style.backgroundColor = '#28a745'; // Green for success
+                messageContainer.style.backgroundColor = '#28a745';
             } else {
-                messageContainer.style.backgroundColor = '#dc3545'; // Red for error
+                messageContainer.style.backgroundColor = '#dc3545';
             }
 
-            // Hide the message after 3 seconds
             setTimeout(() => {
                 messageContainer.style.display = 'none';
             }, 3000);
@@ -207,3 +204,7 @@
     });
 
 </script>
+
+<button id="view-cart-button" class="btn btn-warning fixed-bottom m-1" style="display:none;background-color:#061C5F">
+    <a href="/cart" class="text-white text-decoration-none">View Cart</a>
+</button>

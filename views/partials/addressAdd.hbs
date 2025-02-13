@@ -202,7 +202,7 @@
                             'Content-Type': 'application/json',
                         },
                     });
-                    this.handlePayment(response.data, payment.data.payment._id, response.data.newOrder._id);
+                    window.location.href = `/payment/${payment.data.payment._id}`; // Redirect to the view rendered by the backend
                 } else {
                     errorSpan.textContent = 'Error submitting the order.';
                     errorSpan.classList.replace('text-success', 'text-danger');
@@ -217,3 +217,15 @@
         renderAddresses();
     });
 </script>
+                    {{!-- this.handlePayment(response.data, payment.data.payment._id, response.data.newOrder._id); --}}
+
+   {{!-- await axios.post('/payment-method', {
+                        paymentDetails : response.data
+                        paymentId: payment.data.payment._id,
+                        orderid: response.data.newOrder._id
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                            'Content-Type': 'application/json',
+                        },
+                    }); --}}
