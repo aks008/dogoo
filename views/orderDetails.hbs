@@ -114,7 +114,12 @@
         <!-- Order Card -->
         <div class="card h-100">
           <div class="card-header">
-            <h5>Order #{{orderNumber}}</h5>
+
+            {{#if (eq paymentDetails.paymentType "none")}}
+                <span class="text">Order incomplete! Please select a payment method to continue.</span>
+                {{else}}
+                    <h5>Order #{{orderNumber}}</h5>
+            {{/if}}
           </div>
           <div class="card-body">
             <!-- Order Status -->
@@ -124,7 +129,7 @@
             </div>
 
             <div class="order-info">
-              <p><strong>Name:</strong> {{address.name}}</p>
+              <p><strong>Name: </strong> {{address.name}}</p>
               <p><strong>Phone:</strong>+91 {{address.phone}}</p>
 
               <!-- Address -->
@@ -140,10 +145,21 @@
 
             <!-- Order Details & Cancel Button -->
             <div class="order-btn text-center mt-3">
-              <a href="/order/{{_id}}" class="btn-view">View Details</a>
-              <a type="button" class="btn-cancel" data-bs-toggle="modal" data-status="{{status}}" data-id="{{_id}}"
-                data-bs-target="#cancelOrderModal" onclick="setOrderIdInModal(this)">Cancel Order</a>
-            </div>
+              <a href="/order/{{_id}}" class="" style="background-color:#0A3B70;">View Details</a>
+             {{#if paymentDetails.paymentType}}
+                  {{#if (eq paymentDetails.paymentType "none")}}
+                    <a href="/payment/{{paymentDetails._id}}" class="btn btn-success ms-2">Pay Now</a>
+                  {{else}}
+                  {{#if (eq status "delivered")}}
+                       {{!-- <a type="button" style="background-color:#0A3B70;color:white" class="ms-2" data-bs-toggle="modal" data-status="{{status}}" data-id="{{_id}}"
+                        data-bs-target="#cancelOrderModal" onclick="setOrderIdInModal(this)">Invoice</a> --}}
+                     {{else}}
+                        <a type="button" class="btn-cancel" data-bs-toggle="modal" data-status="{{status}}" data-id="{{_id}}"
+                        data-bs-target="#cancelOrderModal" onclick="setOrderIdInModal(this)">Cancel Order</a>            
+                  {{/if}}
+                    {{/if}}
+              {{/if}}
+              </div>
           </div>
         </div>
       </div>

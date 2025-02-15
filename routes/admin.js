@@ -239,13 +239,9 @@ router.put('/status/change/:id', async (req, res) => {
 				orderDate: orderDetails.orderDate,
 				totalAmount: orderDetails.totalAmount
 			}
+			
 			delieverdMail(order);
-		} else if (req.body.status === "confirmed") {
-			await PaymentTransaction.create({
-				orderId: orderDetails._id,
-				amount: orderDetails.totalAmount
-			})
-		}
+		} 
 		return res.status(200).json(order);
 	} catch (err) {
 		console.error(err);

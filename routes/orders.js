@@ -131,6 +131,7 @@ router.post('/paynow', async (req, res) => {
 		items.forEach(item => {
 			totalPrice += item.totalPrice;
 		});
+		totalPrice = totalPrice > 999 ? totalPrice : totalPrice + 49;
 		postData["products"] = items;
 		postData["totalAmount"] = totalPrice;
 		postData["orderBy"] = req.user.id;
@@ -138,9 +139,9 @@ router.post('/paynow', async (req, res) => {
 		if (totalPrice) {
 			const newOrder = new Order(postData);
 			const orderDetails = await newOrder.save();
-			// await Cart.deleteOne({
-			// 	userId: req.user.id
-			// });
+			await Cart.deleteOne({
+				userId: req.user.id
+			});
 			const orderAddressDetails = await Address.findOne({ _id: orderDetails.address });
 			const userDetails = await User.findOne({ _id: req.user.id });
 			const order = {
@@ -152,8 +153,8 @@ router.post('/paynow', async (req, res) => {
 			}
 			order["customerEmail"] = userDetails.email;
 			order.date = moment(new Date()).format("DD-MM-YYYY");
-			// orderMail(order);
-			// newOrderMailForAdmin(order);
+			orderMail(order);
+			newOrderMailForAdmin(order);
 			return res.status(201).json({ message: 'Order placed successfully!', newOrder, orderAddressDetails });
 		}
 		return res.status(201).json({

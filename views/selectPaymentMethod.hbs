@@ -1,3 +1,7 @@
+
+{{> loader}}
+
+
 <title>Select Payment Method</title>
 <style>
     * {
@@ -11,14 +15,14 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        min-height: 100vh;
+        min-height: 85vh;
         background: #f4f4f4;
         padding: 10px;
     }
 
     .payment-container {
         width: 100%;
-        max-width: 400px;
+        height: 100%;
         background: white;
         border-radius: 16px;
         padding: 20px;
@@ -168,26 +172,29 @@
                     name: selectedPayment.dataset.addressname,
                     phone: selectedPayment.dataset.addressphone,
                     email: selectedPayment.dataset.addressemail
-                }
-
+                }   
+         
                 if (paymentType === "Online") {
                     this.handlePayment(paymentDetails, paymentDetails.paymentId, paymentDetails.orderId);
                 } else {
-                    axios.put(`/payment/${paymentId}`, {
-                        transaction: response,
-                        paymentType: "Online",
-                        paymentStatus: "success"
+                    const loaderOverlay = document.getElementById("loader-overlay");
+                    loaderOverlay.style.display = "flex";   
+                    axios.put(`/payment/${ paymentDetails.paymentId}`, {
+                        paymentType: "Cash",
+                        paymentStatus: "PayOnDelivery"
                     }, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,
                             'Content-Type': 'application/json',
                         },
-                    })
-                        .then(res => {
-                            window.location.href = `/order/${orderId}`;
+                    }).then(res => {
+                            window.location.href = `/order/${paymentDetails.orderId}`;
                         })
                         .catch(error => {
                             console.error("Error updating payment status:", error);
+                        }).finally(() => {
+                            // Hide Loader after response
+                            loaderOverlay.style.display = "none";
                         });
 
                 }

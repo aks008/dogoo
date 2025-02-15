@@ -17,7 +17,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const errorElement = document.getElementById("errorForRegistration");
         errorElement.textContent = "";  // Clear the error message
         errorElement.style.color = ""; // Reset color
-
+        const loaderOverlay = document.getElementById("loader-overlay");
+        loaderOverlay.style.display = "flex";
         // Get form field values
         const firstName = document.getElementById("firstName").value;
         const lastName = document.getElementById("lastName").value;
@@ -100,6 +101,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.error('Error:', error);
                     alert("An unexpected error occurred. Please try again.");
                 }
+            }).finally(() => {
+                // Hide Loader after response
+                loaderOverlay.style.display = "none";
             });
     });
 
@@ -108,6 +112,8 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault(); // Prevent the form from submitting the traditional way
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
+        const loaderOverlay = document.getElementById("loader-overlay");
+        loaderOverlay.style.display = "flex";
 
         // Send login request via AJAX (using Axios)
         axios.post(`/users/login`, { email, password })
@@ -122,6 +128,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 const formError = document.getElementById('formErrorForLogin');
                 formError.style.display = 'block'; // Show the error message
                 formError.innerHTML = 'Invalid credentials. Please try again.'; // Display custom error message
+            }).finally(() => {
+                // Hide Loader after response
+                loaderOverlay.style.display = "none";
             });
     });
 });
