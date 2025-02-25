@@ -58,10 +58,20 @@ router.get('/details', async (req, res) => {
 				$unwind: { path: "$paymentDetails", preserveNullAndEmptyArrays: true } // If no payment, don't remove the order
 			},
 			{
+				$lookup: {
+					from: "invoices", // Name of the Address collection
+					localField: "_id", // The field in Order referencing Address
+					foreignField: "orderId", // The primary key in Address collection
+					as: "invoice" // Output array field with address data
+				}
+			},
+			{
+				$unwind: { path: "$invoice", preserveNullAndEmptyArrays: true } // If no payment, don't remove the order
+			},
+			{
 				$sort: { _id: -1 } // Sort orders by _id in descending order
 			}
 		]);
-		// console.log(orders);
 		const user = await User.findOne({ _id: req.user.id });
 		return res.render("orderDetails", {
 			layout: 'dashboard',  // Use the dashboard layout
@@ -81,7 +91,6 @@ router.get('/details', async (req, res) => {
 router.post('/paynow', async (req, res) => {
 	try {
 		const postData = req.body;
-		console.log(postData);
 		const items = await Cart.aggregate([
 			// Match the cart with the specific userId
 			{
@@ -131,6 +140,9 @@ router.post('/paynow', async (req, res) => {
 		items.forEach(item => {
 			totalPrice += item.totalPrice;
 		});
+		if (totalPrice < 999) {
+			postData["isDeliveryCharge"] = true;	
+		}
 		totalPrice = totalPrice > 999 ? totalPrice : totalPrice + 49;
 		postData["products"] = items;
 		postData["totalAmount"] = totalPrice;
@@ -197,7 +209,20 @@ router.get('/:id', async (req, res) => {
 					as: "paymentDetails"  // Alias for merged payment details
 				}
 			},
-
+			{
+				$lookup: {
+					from: "invoices",  // Payment collection
+					localField: "_id",  // Field in Order (using _id as order reference)
+					foreignField: "orderId",  // orderId in Payment collection
+					as: "invoiceDetails"  // Alias for merged payment details
+				}
+			},
+			{
+				$unwind: {
+					path: "$invoiceDetails",  // Flatten the productsDetails array
+					preserveNullAndEmptyArrays: true  // Keep documents even if there are no matches
+				}
+			},
 			// Step 9: If no payment found, set to empty array
 			{
 				$addFields: {
@@ -284,6 +309,7 @@ router.get('/:id', async (req, res) => {
 					},
 					status: { $first: "$status" },
 					orderNumber: { $first: "$orderNumber" },
+					invoiceDetails: { $first: "$invoiceDetails" },
 					products: {
 						$push: {
 							productId: "$products.productId",
@@ -302,8 +328,7 @@ router.get('/:id', async (req, res) => {
 				}
 			}
 		]);
-
-		const oadd = await Address.findOne({ _id: order[0].address });
+		// const oadd = await Address.findOne({ _id: order[0]?.address });
 		// If no order is found, redirect to the index page
 		// if (order.length === 0) {
 		// 	return res.redirect('/'); // Redirect to the index page
@@ -358,7 +383,6 @@ router.post('/address/save', async (req, res) => {
 	try {
 		req.body["userId"] = req.user.id;
 		const orders = await Address.create(req.body);
-		console.log('API Response:', orders); // Log the created address
 		return res.status(201).json({
 			data: orders
 		});
@@ -392,8 +416,6 @@ router.get('/address/:id', async (req, res) => {
 
 router.put('/address/:id', async (req, res) => {
 	try {
-		console.log(req.body);
-
 		await Address.updateOne(
 			{ _id: req.params.id },  // filter condition
 			{ $set: req.body }       // update operation

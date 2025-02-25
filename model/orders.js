@@ -36,6 +36,10 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    isDeliveryCharge: {
+        type: Boolean,
+        default: false
+    },
     products: [{
         productId: {
             type: mongoose.Schema.Types.ObjectId,

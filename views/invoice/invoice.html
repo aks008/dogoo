@@ -15,12 +15,21 @@
 				<p>{{address}}</p>
 				<p>+91 {{customerPhone}}</p>
 			</address>
-			<span><img alt="LOGO" src="http://www.jonathantneal.com/examples/invoice/logo.png"><input type="file" accept="image/*"></span>
+			<!-- <img src="../../../public/image/logo.png" class="card-logo" alt="logo"> -->
 		</header>
 		<article>
 			<h1>Recipient</h1>
 			<address contenteditable>
 				<p>Dogo Buiscuits<br></p>
+				<p style="font-weight: normal; font-size: 12px; padding: 2px;">
+					Email: <a href="mailto:dogobuscuits@gmail.com" style="text-decoration: none; color: inherit;">dogobuscuits@gmail.com</a>
+				</p>
+				<p style="font-weight: normal; font-size: 12px; padding: 2px;">
+					Phone: <a href="tel:+918000757744" style="text-decoration: none; color: inherit;">+91 8000757744</a>
+				</p>
+				<p style="font-weight: normal; font-size: 12px; padding: 2px;">
+					Website: <a href="https://www.dogobiscuits.com" target="_blank" style="text-decoration: none; color: inherit;">www.dogobiscuits.com</a>
+				</p>
 			</address>
 			<table class="meta">
 				<tr>
@@ -60,7 +69,7 @@
 			<table class="balance">
 				<tr>
 					<th><span contenteditable>Total</span></th>
-					<td><span data-prefix>$</span><span>{{total}}</span></td>
+					<td><span data-prefix>₹</span><span>{{total}}</span></td>
 				</tr>
 			
 			</table>
@@ -88,13 +97,6 @@
 	vertical-align: top;
 }
 
-/* content editable */
-
-*[contenteditable] { border-radius: 0.25em; min-width: 1em; outline: 0; }
-
-*[contenteditable] { cursor: pointer; }
-
-*[contenteditable]:hover, *[contenteditable]:focus, td:hover *[contenteditable], td:focus *[contenteditable], img.hover { background: #DEF; box-shadow: 0 0 1em 0.5em #DEF; }
 
 span[contenteditable] { display: inline-block; }
 
@@ -200,12 +202,10 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
 
 .add { margin: -2.5em 0 0; }
 
-.add:hover { background: #00ADEE; }
 
 .cut { opacity: 0; position: absolute; top: 0; left: -1.5em; }
 .cut { -webkit-transition: opacity 100ms ease-in; }
 
-tr:hover .cut { opacity: 1; }
 
 @media print {
 	* { -webkit-print-color-adjust: exact; }

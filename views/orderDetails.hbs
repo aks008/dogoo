@@ -118,14 +118,14 @@
             {{#if (eq paymentDetails.paymentType "none")}}
                 <span class="text">Order incomplete! Please select a payment method to continue.</span>
                 {{else}}
-                    <h5>Order #{{orderNumber}}</h5>
+                    <h5>Order #{{orderNumber}}</h5> 
             {{/if}}
           </div>
           <div class="card-body">
             <!-- Order Status -->
             <div class="mb-3">
               <label class="form-label">Status: </label>
-              <span class="status-label status-{{status}}">{{status}}</span>
+              <span class="status-label status-{{status}}">{{status}} </span>
             </div>
 
             <div class="order-info">
@@ -151,8 +151,9 @@
                     <a href="/payment/{{paymentDetails._id}}" class="btn btn-success ms-2">Pay Now</a>
                   {{else}}
                   {{#if (eq status "delivered")}}
-                       {{!-- <a type="button" style="background-color:#0A3B70;color:white" class="ms-2" data-bs-toggle="modal" data-status="{{status}}" data-id="{{_id}}"
-                        data-bs-target="#cancelOrderModal" onclick="setOrderIdInModal(this)">Invoice</a> --}}
+                      <a type="button" style="background-color:#0A3B70;color:white" class="ms-2"
+                        data-bs-toggle="modal" data-status="{{status}}" data-id="{{invoice._id}}"
+                       onclick="downloadInvoice(this)">Invoice</a>
                      {{else}}
                         <a type="button" class="btn-cancel" data-bs-toggle="modal" data-status="{{status}}" data-id="{{_id}}"
                         data-bs-target="#cancelOrderModal" onclick="setOrderIdInModal(this)">Cancel Order</a>            
@@ -272,3 +273,50 @@
     });
   </script>
 </body>
+
+<script>
+  async function downloadInvoice(element) {
+    const invoiceId = element.getAttribute("data-id");
+    if (!invoiceId) {
+        alert("Invoice ID not found!");
+        return;
+    }
+
+    const token = localStorage.getItem('token');
+    const url = `/invoices/${invoiceId}`;
+
+    try {
+        const response = await axios.get(url, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            responseType: "arraybuffer" // Ensure response is treated as raw binary data
+        });
+
+        // Create a Blob from the array buffer
+        const blob = new Blob([response.data], { type: "application/pdf" });
+
+        // Convert Blob into a valid Object URL
+        const downloadUrl = URL.createObjectURL(blob);
+
+        // Create a temporary link and trigger the download
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = `invoice_${invoiceId}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup
+        document.body.removeChild(link);
+        URL.revokeObjectURL(downloadUrl);
+
+    } catch (error) {
+        console.error("Error downloading invoice:", error);
+
+        // Convert buffer response to a readable error message
+        const errorText = new TextDecoder().decode(error.response?.data);
+        alert(`Failed to download invoice. Error: ${errorText}`);
+    }
+}
+
+</script>

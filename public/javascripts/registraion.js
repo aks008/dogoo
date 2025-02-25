@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Display error message on failure
                 const formError = document.getElementById('formErrorForLogin');
                 formError.style.display = 'block'; // Show the error message
-                formError.innerHTML = 'Invalid credentials. Please try again.'; // Display custom error message
+                formError.innerHTML = 'Invalid Username & Password.'; // Display custom error message
             }).finally(() => {
                 // Hide Loader after response
                 loaderOverlay.style.display = "none";

@@ -42,11 +42,11 @@
                     <i class="fas fa-cogs"></i> Products
                 </a>
             </li>
-            <li class="nav-item">
+            {{!-- <li class="nav-item">
                 <a class="nav-link" href="subscription">
                     <i class="fas fa-rss"></i> Subscription
                 </a>
-            </li>
+            </li> --}}
             <li class="nav-item">
                 <a class="nav-link" href="feed">
                     <i class="fas fa-utensils"></i> Feed For You
@@ -194,7 +194,9 @@
                         <button type="submit" class="btn btn-warning w-100">Login</button>
                         <div class="mt-2 text-center" >
                         <span style="text-align: center;"> Register ? <a  href="#" data-bs-toggle="modal"
-                        data-bs-target="#registerModal" style="color: orange; text-decoration: none;"> Sign up</a></span>
+                        data-bs-target="#registerModal" style="color: orange; text-decoration: none;"> Sign up</a></span> <br>
+                        <span style="text-align: center;">  <a  href="#" data-bs-toggle="modal"
+                        data-bs-target="#passwordModal" style="color: orange; text-decoration: none;"> Forgot password</a></span>
                         </div>
                         <div id="formErrorForLogin" class="text-danger mt-2"></div>
                     </form>
@@ -203,6 +205,27 @@
         </div>
     </div>
 </div>
+
+<!-- Full-Screen Forgot Password Modal -->
+<div class="modal fade" id="passwordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+        <div class="modal-content border-0 d-flex justify-content-center align-items-center"
+            style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);">
+            
+            <!-- Close Button -->
+            <div class="container text-center" style="">
+                <h2 class="mb-4 text-white" style=" margin-top: 30vh;">Forgot Password</h2>
+                <div class="card p-4 shadow-lg mx-auto text-white"
+                    style="max-width: 400px; background-color: rgba(0, 0, 0, 0.8); border-radius: 10px;">
+                    <input type="email" id="email" class="form-control mb-3 text-white bg-dark border-light"
+                        placeholder="Enter your email ID">
+                    <button class="btn btn-primary w-100" onclick="sendResetEmail()">Forgot Password</button>
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+
 
 {{> loader}}
 

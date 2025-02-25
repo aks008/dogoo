@@ -8,6 +8,8 @@ const Orders = require('../model/orders');
 const Products = require('../model/products');
 const PaymentTransaction = require('../model/paymentTransaction');
 const delieverdMail = require("../service/deliverdEmail");
+const InvoiceService = require("../service/invoice.service");
+const invoiceService = new InvoiceService();
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -222,24 +224,27 @@ router.delete('/products/:id', async (req, res) => {
 router.put('/status/change/:id', async (req, res) => {
 	try {
 		const orderDetails = await Orders.findOne({ _id: req.params.id });
+		if (!orderDetails) {
+			return res.status(500).json({ message: 'order details not found', error: err.message });
+		}
 		const order = await Orders.updateOne({
 			_id: req.params.id
 		},
-			{
-				$set: {
-					status: req.body.status
-				}
+		{
+			$set: {
+				status: req.body.status
+			}
 			});
 		if (req.body.status === "delivered") {
-			const userDetails = await Users.findOne({ _id: orderDetails.orderBy });
-			const order = {
-				orderNumber: orderDetails.orderNumber,
-				customerName: orderDetails.customerName,
-				customerEmail: userDetails.email,
-				orderDate: orderDetails.orderDate,
-				totalAmount: orderDetails.totalAmount
-			}
-			
+			  const userDetails = await Users.findOne({ _id: orderDetails.orderBy });
+			  const order = {
+				  orderNumber: orderDetails.orderNumber,
+				  customerName: orderDetails.customerName,
+				  customerEmail: userDetails.email,
+				  orderDate: orderDetails.orderDate,
+				  totalAmount: orderDetails.totalAmount
+				}
+			const data = await invoiceService.generateInvoice(req.params.id);
 			delieverdMail(order);
 		} 
 		return res.status(200).json(order);

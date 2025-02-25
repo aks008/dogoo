@@ -25,6 +25,7 @@
     "morgan": "~1.9.1",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.16",
+    "puppeteer": "^24.2.1",
     "razorpay": "^2.9.5"
   }
 }
