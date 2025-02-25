@@ -7,9 +7,11 @@
   },
   "dependencies": {
     "@handlebars/allow-prototype-access": "^1.0.5",
+    "@sparticuz/chromium": "^132.0.0",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
+    "chrome-aws-lambda": "^10.1.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^16.4.7",
@@ -26,6 +28,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.16",
     "puppeteer": "^24.2.1",
+    "puppeteer-core": "^10.4.0",
     "razorpay": "^2.9.5"
   }
 }
