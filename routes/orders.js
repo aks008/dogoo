@@ -140,10 +140,10 @@ router.post('/paynow', async (req, res) => {
 		items.forEach(item => {
 			totalPrice += item.totalPrice;
 		});
-		if (totalPrice < 999) {
-			postData["isDeliveryCharge"] = true;	
+		if (totalPrice < 999 && totalPrice > 0) {
+			postData["isDeliveryCharge"] = true;
+			totalPrice += 49;
 		}
-		totalPrice = totalPrice > 999 ? totalPrice : totalPrice + 49;
 		postData["products"] = items;
 		postData["totalAmount"] = totalPrice;
 		postData["orderBy"] = req.user.id;

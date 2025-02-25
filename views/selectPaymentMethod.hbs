@@ -1,4 +1,3 @@
-
 {{> loader}}
 
 
@@ -113,7 +112,7 @@
 <body>
     <div class="payment-container">
         <h3>Choose Payment Method</h3>
-        <label class="card-option selected" onclick="selectPayment(this)">
+        {{!-- <label class="card-option selected" onclick="selectPayment(this)">
             <div class="card-info">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="card-logo"
                     alt="Mastercard">
@@ -126,7 +125,7 @@
                 data-addressEmail={{paymentDetails.addressDetails.email}} data-orderId={{paymentDetails.orderId}}
                 data-amount={{paymentDetails.amount}} data-paymentId={{paymentDetails._id}} name="payment"
                 value="Online" checked>
-        </label>
+        </label> --}}
 
         <label class="card-option" onclick="selectPayment(this)">
             <div class="card-info">
@@ -172,14 +171,14 @@
                     name: selectedPayment.dataset.addressname,
                     phone: selectedPayment.dataset.addressphone,
                     email: selectedPayment.dataset.addressemail
-                }   
-         
+                }
+
                 if (paymentType === "Online") {
                     this.handlePayment(paymentDetails, paymentDetails.paymentId, paymentDetails.orderId);
                 } else {
                     const loaderOverlay = document.getElementById("loader-overlay");
-                    loaderOverlay.style.display = "flex";   
-                    axios.put(`/payment/${ paymentDetails.paymentId}`, {
+                    loaderOverlay.style.display = "flex";
+                    axios.put(`/payment/${paymentDetails.paymentId}`, {
                         paymentType: "Cash",
                         paymentStatus: "PayOnDelivery"
                     }, {
@@ -188,8 +187,8 @@
                             'Content-Type': 'application/json',
                         },
                     }).then(res => {
-                            window.location.href = `/order/${paymentDetails.orderId}`;
-                        })
+                        window.location.href = `/order/${paymentDetails.orderId}`;
+                    })
                         .catch(error => {
                             console.error("Error updating payment status:", error);
                         }).finally(() => {

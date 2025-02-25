@@ -67,7 +67,8 @@
     <!-- Submit Button -->
     <div class="mt-4">
         <div class="mb-3">
-            <label class="form-label">Select Delivery Time : </label> <br>
+            <label class="form-label">Select Delivery Time : <span style="color: green;">Delivered within 9-10 days
+                </span></label> <br>
             <input class="form-check-input" type="radio" name="timeSlot" id="firstHalf" value="9AM - 3PM" required>
             <label class="form-check-label" style="padding-right: 5%;" for="homeType">9am - 3pm</label>
             <input class="form-check-input" type="radio" name="timeSlot" id="secondHalf" value="3PM - 9PM">
@@ -217,15 +218,15 @@
         renderAddresses();
     });
 </script>
-                    {{!-- this.handlePayment(response.data, payment.data.payment._id, response.data.newOrder._id); --}}
+{{!-- this.handlePayment(response.data, payment.data.payment._id, response.data.newOrder._id); --}}
 
-   {{!-- await axios.post('/payment-method', {
-                        paymentDetails : response.data
-                        paymentId: payment.data.payment._id,
-                        orderid: response.data.newOrder._id
-                    }, {
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                            'Content-Type': 'application/json',
-                        },
-                    }); --}}
+{{!-- await axios.post('/payment-method', {
+paymentDetails : response.data
+paymentId: payment.data.payment._id,
+orderid: response.data.newOrder._id
+}, {
+headers: {
+'Authorization': `Bearer ${localStorage.getItem('token')}`,
+'Content-Type': 'application/json',
+},
+}); --}}
