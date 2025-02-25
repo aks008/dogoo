@@ -147,7 +147,6 @@
                 productImageClone.style.height = `${productImageRect.height}px`;
 
                 // Add flying class to start the animation
-                productImageClone.classList.add('flying');
 
                 axios.post(`/cart/add`, { productId, quantity })
                     .then(response => {
@@ -205,7 +204,7 @@
 
 </script>
 
-{{!-- <button id="view-cart-button" class="btn btn-warning fixed-bottom w-100 text-center shadow-lg"
-    style="display: none; background-color: #061C5F; border-radius: 0; padding: 12px; position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);">
+<button id="view-cart-button" class="btn btn-warning fixed-bottom w-100 text-center shadow-lg mb-1"
+    style="display: none; background-color: #061C5F; border-radius: 0; padding: 12px;">
     <a href="/cart" class="text-white text-decoration-none d-block w-100">View Cart</a>
-</button> --}}
+</button>
