@@ -83,28 +83,52 @@ document.addEventListener("DOMContentLoaded", function () {
         // Registration logic
         axios.post('/users/register', { firstName, lastName, gender, birthdate, email, phone, password })
             .then(successResponse => {
-                // Call login API
+                // User registration successful, proceed with login
                 return axios.post('/users/login', { email, password });
             })
             .then(loginResponse => {
+                // If login is successful, save the token and redirect
                 const token = loginResponse.data.token;
                 localStorage.setItem('token', token);
                 window.location.href = "/"; // Redirect after login
             })
             .catch(error => {
-                console.log(error);
-                if (error.response && error.response.status === 400) {
-                    // User already exists
-                    errorElement.textContent = "User already exists.";
-                    errorElement.style.color = "red";
+                console.log('Full Error:', error); // Log the full error object for debugging
+
+                // Handle error based on the response status
+                if (error.response) {
+                    // Check if the error status is 400 (user already exists or validation failed)
+                    if (error.response.status === 400) {
+                        if (error.response.data && error.response.data.message === 'User already exists') {
+                            // If the error message is "User already exists", show the appropriate message
+                            errorElement.textContent = "User already exists.";
+                            errorElement.style.color = "red";
+                        } else {
+                            // Handle other 400 errors (validation failures, etc.)
+                            errorElement.textContent = "Validation error: " + error.response.data.message;
+                            errorElement.style.color = "red";
+                        }
+                    } else if (error.response.status === 500) {
+                        // Server error, inform the user
+                        errorElement.textContent = "Server error. Please try again later.";
+                        errorElement.style.color = "red";
+                    } else {
+                        // Handle any other error responses
+                        errorElement.textContent = "Unexpected error: " + error.response.data.message || "Please try again.";
+                        errorElement.style.color = "red";
+                    }
                 } else {
+                    // If no response was received (network error or timeout)
                     console.error('Error:', error);
-                    alert("An unexpected error occurred. Please try again.");
+                    errorElement.textContent = "Network error. Please check your internet connection.";
+                    errorElement.style.color = "red";
                 }
-            }).finally(() => {
-                // Hide Loader after response
+            })
+            .finally(() => {
+                // Hide the loader after the request completes (success or failure)
                 loaderOverlay.style.display = "none";
             });
+
     });
 
 
