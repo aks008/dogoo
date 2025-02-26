@@ -109,6 +109,7 @@
   <div class="container mt-5">
     <div class="row">
       <!-- Loop through each order -->
+      {{#if orders}}
       {{#each orders}}
       <div class="col-md-4 mb-4">
         <!-- Order Card -->
@@ -116,9 +117,9 @@
           <div class="card-header">
 
             {{#if (eq paymentDetails.paymentType "none")}}
-                <span class="text">Order incomplete! Please select a payment method to continue.</span>
-                {{else}}
-                    <h5>Order #{{orderNumber}}</h5> 
+            <span class="text">Order incomplete! Please select a payment method to continue.</span>
+            {{else}}
+            <h5>Order #{{orderNumber}}</h5>
             {{/if}}
           </div>
           <div class="card-body">
@@ -146,26 +147,37 @@
             <!-- Order Details & Cancel Button -->
             <div class="order-btn text-center mt-3">
               <a href="/order/{{_id}}" class="" style="background-color:#0A3B70;">View Details</a>
-             {{#if paymentDetails.paymentType}}
-                  {{#if (eq paymentDetails.paymentType "none")}}
-                    <a href="/payment/{{paymentDetails._id}}" class="btn btn-success ms-2">Pay Now</a>
-                  {{else}}
-                  {{#if (eq status "delivered")}}
-                      <a type="button" style="background-color:#0A3B70;color:white" class="ms-2"
-                        data-bs-toggle="modal" data-status="{{status}}" data-id="{{invoice._id}}"
-                       onclick="downloadInvoice(this)">Invoice</a>
-                     {{else}}
-                        <a type="button" class="btn-cancel" data-bs-toggle="modal" data-status="{{status}}" data-id="{{_id}}"
-                        data-bs-target="#cancelOrderModal" onclick="setOrderIdInModal(this)">Cancel Order</a>            
-                  {{/if}}
-                    {{/if}}
+              {{#if paymentDetails.paymentType}}
+              {{#if (eq paymentDetails.paymentType "none")}}
+              <a href="/payment/{{paymentDetails._id}}" class="btn btn-success ms-2">Pay Now</a>
+              {{else}}
+              {{#if (eq status "delivered")}}
+              <a type="button" style="background-color:#0A3B70;color:white" class="ms-2" data-bs-toggle="modal"
+                data-status="{{status}}" data-id="{{invoice._id}}" onclick="downloadInvoice(this)">Invoice</a>
+              {{else}}
+              <a type="button" class="btn-cancel" data-bs-toggle="modal" data-status="{{status}}" data-id="{{_id}}"
+                data-bs-target="#cancelOrderModal" onclick="setOrderIdInModal(this)">Cancel Order</a>
               {{/if}}
-              </div>
+              {{/if}}
+              {{/if}}
+            </div>
           </div>
         </div>
       </div>
       {{/each}}
+      {{else}}
+      <div class="container-fluid d-flex justify-content-center align-items-center"
+        style="margin-top: 20%;margin-bottom: 22.5%;">
+        <div class="text-center">
+          <h3 class="fw-bold">Your Order List is Empty</h3>
+          <p>Looks like you have no items in your order list. Start shopping now!</p>
+          <button class="btn btn-warning btn-lg" onclick="window.location.href='/products'" aria-label="Go to Products">
+            Purchase Now
+          </button>
+        </div>
+      </div>
 
+      {{/if}}
     </div>
   </div>
 
@@ -278,45 +290,45 @@
   async function downloadInvoice(element) {
     const invoiceId = element.getAttribute("data-id");
     if (!invoiceId) {
-        alert("Invoice ID not found!");
-        return;
+      alert("Invoice ID not found!");
+      return;
     }
 
     const token = localStorage.getItem('token');
     const url = `/invoices/${invoiceId}`;
 
     try {
-        const response = await axios.get(url, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            responseType: "arraybuffer" // Ensure response is treated as raw binary data
-        });
+      const response = await axios.get(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        responseType: "arraybuffer" // Ensure response is treated as raw binary data
+      });
 
-        // Create a Blob from the array buffer
-        const blob = new Blob([response.data], { type: "application/pdf" });
+      // Create a Blob from the array buffer
+      const blob = new Blob([response.data], { type: "application/pdf" });
 
-        // Convert Blob into a valid Object URL
-        const downloadUrl = URL.createObjectURL(blob);
+      // Convert Blob into a valid Object URL
+      const downloadUrl = URL.createObjectURL(blob);
 
-        // Create a temporary link and trigger the download
-        const link = document.createElement("a");
-        link.href = downloadUrl;
-        link.download = `invoice_${invoiceId}.pdf`;
-        document.body.appendChild(link);
-        link.click();
+      // Create a temporary link and trigger the download
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `invoice_${invoiceId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
 
-        // Cleanup
-        document.body.removeChild(link);
-        URL.revokeObjectURL(downloadUrl);
+      // Cleanup
+      document.body.removeChild(link);
+      URL.revokeObjectURL(downloadUrl);
 
     } catch (error) {
-        console.error("Error downloading invoice:", error);
+      console.error("Error downloading invoice:", error);
 
-        // Convert buffer response to a readable error message
-        const errorText = new TextDecoder().decode(error.response?.data);
-        alert(`Failed to download invoice. Error: ${errorText}`);
+      // Convert buffer response to a readable error message
+      const errorText = new TextDecoder().decode(error.response?.data);
+      alert(`Failed to download invoice. Error: ${errorText}`);
     }
-}
+  }
 
 </script>
